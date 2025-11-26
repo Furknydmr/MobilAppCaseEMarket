@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="H"
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home_24"/>
+    <item android:title="C"
+        android:id="@+id/nav_cart"
+        android:icon="@drawable/ic_cart_24"/>
+    <item android:title="F"
+        android:id="@+id/nav_fav"
+        android:icon="@drawable/ic_fav_24"/>
+    <item android:title="U"
+        android:id="@+id/nav_user"
+        android:icon="@drawable/ic_person_24"/>
+</menu>
