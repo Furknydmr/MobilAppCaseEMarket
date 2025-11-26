@@ -53,4 +53,16 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+// Coroutines (ViewModel içinde suspend fonksiyonları kullanabilmek için)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+// ViewModel & LiveData (MVVM için)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
+    implementation("com.github.bumptech.glide:glide:5.0.5")
+
+
 }
