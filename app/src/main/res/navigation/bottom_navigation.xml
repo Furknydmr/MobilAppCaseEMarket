@@ -16,5 +16,16 @@
         android:label="cart"
         tools:layout="@layout/fragment_cart" />
 
+    <fragment
+        android:id="@+id/fragment_productdetail"
+        android:name="com.example.mobilappcaseemarket.ui.details.ProductDetailFragment"
+        android:label="Ürün Detayları"
+        tools:layout="@layout/fragment_product_detail">
+
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
+
 
 </navigation>

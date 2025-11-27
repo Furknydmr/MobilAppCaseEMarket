@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.example.mobilappcaseemarket.MainActivity
 import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
@@ -93,6 +94,13 @@ class HomeFragment : Fragment() {
             Log.d("HOME_DEBUG", "Creating adapter with imageHeight: $imageHeight")
 
             recyclerView.adapter = ProductAdapter(list, imageHeight) { product ->
+                val bundle = Bundle()
+                bundle.putString("productId", product.id)
+
+                findNavController().navigate(
+                    R.id.fragment_productdetail,
+                    bundle
+                )
 
                 Log.d("HOME_DEBUG", "Clicked product: ${product.name}")
                 // TODO: detay ekranına git
