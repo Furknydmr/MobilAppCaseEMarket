@@ -11,28 +11,34 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.mobilappcaseemarket.R
-import com.example.mobilappcaseemarket.data.model.CartItem
+import com.example.mobilappcaseemarket.data.local.AppDatabase
+import com.example.mobilappcaseemarket.data.repository.FavouriteRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.databinding.FragmentProductDetailBinding
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
+import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 
 class ProductDetailFragment : Fragment() {
+
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: ProductDetailViewModel
-    private var productId: String? = null
     private lateinit var cartViewModel: CartViewModel
+    private lateinit var favouriteViewModel: FavouriteViewModel
+
+    private var productId: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val cartFactory = CartViewModel.CartViewModelFactory(requireContext())
-        cartViewModel = ViewModelProvider(this, cartFactory)[CartViewModel::class.java]
+        cartViewModel = ViewModelProvider(
+            this,
+            CartViewModel.CartViewModelFactory(requireContext())
+        )[CartViewModel::class.java]
 
-
-        productId = requireArguments().getString("productId")
+        productId = requireArguments().getString("productId") ?: ""
         Log.d("DETAIL_DEBUG", "Gelen productId: $productId")
 
         val repo = ProductRepository()
@@ -41,74 +47,68 @@ class ProductDetailFragment : Fragment() {
             ProductDetailViewModelFactory(repo)
         )[ProductDetailViewModel::class.java]
 
-        productId?.let { viewModel.fetchProductById(it) }
+        viewModel.fetchProductById(productId)
+
+        val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
+        val favRepo = FavouriteRepository(favDao)
+        favouriteViewModel = FavouriteViewModel(favRepo)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-
+    ): View {
         _binding = FragmentProductDetailBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // GERİ BUTONU
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
         binding.btnAddToCart.setOnClickListener {
-
-            Log.d("DETAIL_ADD", "➡️ Add to Cart butonuna tıklandı")
-            val p = viewModel.product.value ?: return@setOnClickListener
-
-            if (p == null) {
-                Log.e("DETAIL_ADD", "Ürün bulunamadı (ViewModel.product null)")
-                return@setOnClickListener
+            val product = viewModel.product.value
+            if (product != null) {
+                cartViewModel.addProductToCart(product)
+                Log.d("DETAIL_ADD", "Sepete eklendi.")
             }
-
-            Log.d("DETAIL_ADD", "📦 Ürün bulundu: id=${p.id}, name=${p.name}, price=${p.price}")
-
-            cartViewModel.addProductToCart(p )
-
-            Log.d("DETAIL_ADD", "ViewModel'e gönderildi.")
         }
 
 
-        //  🔥 ÜRÜN GÖZLEMİ
+        // PRODUCT OBSERVER
         viewModel.product.observe(viewLifecycleOwner) { product ->
+            if (product == null) return@observe
 
-            if (product == null) {
-                Log.e("DETAIL_DEBUG", "Ürün bulunamadı!")
-                return@observe
-            }
-
-
-            // BAŞLIK
             binding.txtToolbarTitle.text = product.name
             binding.txtTitle.text = product.name
-
-            // AÇIKLAMA
             binding.txtDescription.text = product.description
-
-            // FİYAT
             binding.txtPrice.text = "${product.price} ₺"
 
-            // GÖRSEL YÜKLEME (GLIDE)
             Glide.with(this)
                 .load(product.image)
                 .into(binding.imgProduct)
         }
 
+        favouriteViewModel.favourites.observe(viewLifecycleOwner) { favSet ->
+
+            val isFav = favSet.contains(productId)
+
+            if (isFav) {
+                binding.imgFavouriteDetail.setImageResource(R.drawable.ic_fav_24_filled)
+            } else {
+                binding.imgFavouriteDetail.setImageResource(R.drawable.ic_fav_24_favourite)
+            }
+        }
+
+        binding.imgFavouriteDetail.setOnClickListener {
+            favouriteViewModel.toggleFavourite(productId)
+        }
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

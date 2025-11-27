@@ -18,15 +18,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobilappcaseemarket.R
+import com.example.mobilappcaseemarket.data.local.AppDatabase
+import com.example.mobilappcaseemarket.data.repository.FavouriteRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
+import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+
 
 class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: HomeViewModel
     private lateinit var cartViewModel: CartViewModel
+    private lateinit var favouriteViewModel: FavouriteViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,19 +41,21 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val searchView = view.findViewById<SearchView>(R.id.search)
 
-        // Modal'dan gelen yanıtı dinle
+        // ---------------------------
+        // FILTER MODAL RESULT LISTENER
+        // ---------------------------
         setFragmentResultListener("filter_result") { _, bundle ->
             when (bundle.getString("sort_type")) {
                 "DEFAULT" -> {
-                    // Search temizle
                     searchView.setQuery("", false)
                     searchView.clearFocus()
 
-                    // Tüm filtreleri kaldır → tüm ürünleri getir
                     viewModel.updateFilter(
                         viewModel.filterOptions.copy(
                             searchQuery = "",
@@ -55,15 +63,18 @@ class HomeFragment : Fragment() {
                         )
                     )
                 }
-                "PRICE_ASC" -> applySort(SortType.PRICE_ASC)
+
+                "PRICE_ASC"  -> applySort(SortType.PRICE_ASC)
                 "PRICE_DESC" -> applySort(SortType.PRICE_DESC)
-                "NAME_ASC" -> applySort(SortType.NAME_ASC)
-                "NAME_DESC" -> applySort(SortType.NAME_DESC)
+                "NAME_ASC"   -> applySort(SortType.NAME_ASC)
+                "NAME_DESC"  -> applySort(SortType.NAME_DESC)
             }
         }
 
 
-        // CART ViewModel
+        // ---------------------------
+        // CART VIEWMODEL
+        // ---------------------------
         cartViewModel = ViewModelProvider(
             requireActivity(),
             CartViewModel.CartViewModelFactory(requireContext())
@@ -71,20 +82,29 @@ class HomeFragment : Fragment() {
 
         cartViewModel.loadCart()
 
-        // ORIENTATION
+
+        // ---------------------------
+        // ORIENTATION / SCREEN SIZE
+        // ---------------------------
         val orientation = resources.configuration.orientation
         val screenHeight = resources.displayMetrics.heightPixels
+
         val imageHeight = (screenHeight * 0.14).toInt()
         val searchHeight = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             (screenHeight * 0.05).toInt()
         } else (screenHeight * 0.10).toInt()
 
-        // RECYCLER VIEW
+
+        // ---------------------------
+        // RECYCLERVIEW
+        // ---------------------------
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // SEARCHVIEW TASARIM
 
+        // ---------------------------
+        // SEARCHVIEW TASARIM
+        // ---------------------------
         val params = searchView.layoutParams
         params.height = searchHeight
         searchView.layoutParams = params
@@ -101,39 +121,64 @@ class HomeFragment : Fragment() {
             setHintTextColor(Color.GRAY)
         }
 
+
+        // ---------------------------
         // FILTER BUTTON
+        // ---------------------------
         val btnSelectFilter = view.findViewById<Button>(R.id.btnSelectFilter)
         btnSelectFilter.setOnClickListener {
             openFilterModalBelowButton(btnSelectFilter)
         }
 
+
+        // ---------------------------
         // HOME VIEWMODEL
+        // ---------------------------
         val repo = ProductRepository()
         viewModel = ViewModelProvider(
             this,
             HomeViewModelFactory(repo)
         )[HomeViewModel::class.java]
 
-        // ADAPTER
+
+        // ---------------------------
+        // ★★★ FAVOURITE VIEWMODEL OLUŞTURULDU
+        // ---------------------------
+        val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
+        val favRepo = FavouriteRepository(favDao)
+        favouriteViewModel = FavouriteViewModel(favRepo)
+
+
+        // ---------------------------
+        // ADAPTER (FAVOURITE DAHİL!)
+        // ---------------------------
         val adapter = ProductAdapter(
             mutableListOf(),
             imageHeight,
+            favouriteViewModel = favouriteViewModel,      // ★ eklendi
+            lifecycleOwner = viewLifecycleOwner,          // ★ eklendi
+
             onItemClick = { product ->
                 val bundle = Bundle()
                 bundle.putString("productId", product.id)
                 findNavController().navigate(R.id.fragment_productdetail, bundle)
             },
+
             onAddClick = { product ->
                 cartViewModel.addProductToCart(product)
             }
         )
+
         recyclerView.adapter = adapter
 
-        // SEARCHVIEW — yeni filtre yapısı ile bağlandı!
+
+        // ---------------------------
+        // SEARCH FILTERING
+        // ---------------------------
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
-            override fun onQueryTextChange(newText: String?): Boolean {
 
+            override fun onQueryTextChange(newText: String?): Boolean {
                 viewModel.updateFilter(
                     FilterOptions(
                         searchQuery = newText.orEmpty(),
@@ -144,10 +189,12 @@ class HomeFragment : Fragment() {
             }
         })
 
-        // ÜRÜNLERİ YÜKLE
+
+        // ---------------------------
+        // LOAD PRODUCTS
+        // ---------------------------
         viewModel.fetchProducts()
 
-        // OBSERVE LIST
         viewModel.productList.observe(viewLifecycleOwner) { list ->
             adapter.updateList(list)
         }
@@ -156,9 +203,9 @@ class HomeFragment : Fragment() {
     }
 
 
-    // -----------------------------------------------------------
+    // ---------------------------
     // INFINITE SCROLL
-    // -----------------------------------------------------------
+    // ---------------------------
     private fun addInfiniteScroll() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -179,14 +226,12 @@ class HomeFragment : Fragment() {
     }
 
 
-    // -----------------------------------------------------------
-    // FILTER MODAL — Sort seçimi burada güncelle
-    // -----------------------------------------------------------
     fun applySort(option: SortType) {
         viewModel.updateFilter(
             viewModel.filterOptions.copy(sortType = option)
         )
     }
+
 
     private fun openFilterModalBelowButton(anchorView: View) {
         val modal = FilterModalFragment()

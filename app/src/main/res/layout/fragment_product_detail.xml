@@ -74,7 +74,7 @@
                     android:scaleType="centerCrop" />
 
                 <ImageView
-                    android:id="@+id/imgFavorite"
+                    android:id="@+id/imgFavouriteDetail"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_fav_24"

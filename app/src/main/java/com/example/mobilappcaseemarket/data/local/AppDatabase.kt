@@ -5,32 +5,32 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mobilappcaseemarket.data.model.CartItem
+import com.example.mobilappcaseemarket.data.model.FavouriteItem
 
 @Database(
-    entities = [CartItem::class],
-    version = 3,
+    entities = [CartItem::class, FavouriteItem::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    // DAO’yu bağladığımız yer
     abstract fun cartDao(): CartDao
+    abstract fun favouriteDao(): FavouriteDao
 
     companion object {
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        // Singleton -> Tek bir database instance'ı yaratır
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
 
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_db"   // veritabanı dosyasının adı
+                    "app_db"
                 )
-                    .fallbackToDestructiveMigration()  // schema değişirse app çökmesin
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

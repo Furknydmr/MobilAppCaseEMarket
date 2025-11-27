@@ -1,10 +1,8 @@
-package com.example.mobilappcaseemarket.ui.home
+package com.example.mobilappcaseemarket.ui.home.favourite
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
@@ -14,37 +12,29 @@ import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 
-class ProductAdapter(
+class FavouriteAdapter(
     private val list: MutableList<Product>,
-    private val imageHeight: Int,
-    private val onItemClick: (Product) -> Unit,
-    private val onAddClick: (Product) -> Unit,
-    private val favouriteViewModel: FavouriteViewModel, // ★ EKLENDİ
+    private val favouriteViewModel: FavouriteViewModel,
     private val lifecycleOwner: LifecycleOwner,
-) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+    private val onItemClick: (Product) -> Unit
+) : RecyclerView.Adapter<FavouriteAdapter.FavViewHolder>() {
 
-
-    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class FavViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val img = itemView.findViewById<ImageView>(R.id.imgProduct)
         val name = itemView.findViewById<TextView>(R.id.txtName)
         val price = itemView.findViewById<TextView>(R.id.txtPrice)
-        val btnAdd = itemView.findViewById<Button>(R.id.btnAddToCart)
-        val imgFav = itemView.findViewById<ImageView>(R.id.imgFavourite)
+        val favIcon = itemView.findViewById<ImageView>(R.id.imgFavourite)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_product, parent, false)
-        return ProductViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_favourite, parent, false)
+        return FavViewHolder(v)
     }
 
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: FavViewHolder, position: Int) {
         val item = list[position]
 
-
-        val params = holder.img.layoutParams
-        params.height = imageHeight
-        holder.img.layoutParams = params
         holder.name.text = item.name
         holder.price.text = "${item.price} ₺"
 
@@ -56,35 +46,29 @@ class ProductAdapter(
             onItemClick(item)
         }
 
-
-        holder.btnAdd.setOnClickListener {
-            onAddClick(item)
-            Log.d("addProduct", "butona tıklandı. Id:${item.id} ")
-        }
-
-
         favouriteViewModel.favourites.observe(lifecycleOwner) { favSet ->
             val isFav = favSet.contains(item.id)
-
-            holder.imgFav.setImageResource(
+            holder.favIcon.setImageResource(
                 if (isFav) R.drawable.ic_fav_24_filled
                 else R.drawable.ic_fav_24_favourite
             )
         }
 
-        // ★★ Favori ikonuna tıklayınca toggleFavourite
-        holder.imgFav.setOnClickListener {
+        holder.favIcon.setOnClickListener {
             favouriteViewModel.toggleFavourite(item.id)
+
+            // Favoriden çıkarınca UI’dan da kaldır
+            list.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, list.size)
         }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount() = list.size
 
     fun updateList(newList: List<Product>) {
         list.clear()
         list.addAll(newList)
         notifyDataSetChanged()
     }
-
-
 }
