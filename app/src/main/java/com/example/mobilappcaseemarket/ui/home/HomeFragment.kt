@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,6 +25,7 @@ import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.data.repository.CartRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -34,10 +36,6 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: HomeViewModel
     private lateinit var cartViewModel: CartViewModel
-    private var userIsScrolling = false
-    private lateinit var adapter: ProductAdapter
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,6 +98,15 @@ class HomeFragment : Fragment() {
             setTextColor(Color.BLACK)
             setHintTextColor(Color.GRAY)
         }
+
+
+        val btnSelectFilter = view.findViewById<Button>(R.id.btnSelectFilter)
+
+        btnSelectFilter.setOnClickListener {
+            openFilterModalBelowButton(btnSelectFilter)
+        }
+
+
 
 
 
@@ -185,6 +192,35 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+    }
+
+
+    private fun openFilterModalBelowButton(anchorView: View) {
+        val modal = FilterModalFragment()
+
+        modal.show(parentFragmentManager, "FilterModal")
+
+        modal.dialog?.setOnShowListener {
+
+            val bottomSheet =
+                modal.dialog!!.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+
+            // Butonun ekrandaki Y pozisyonu
+            val location = IntArray(2)
+            anchorView.getLocationOnScreen(location)
+            val anchorY = location[1] + anchorView.height
+
+            // Ekran yüksekliği
+            val screenHeight = resources.displayMetrics.heightPixels
+
+            // Modalın peek-height’ı tam butonun altından başlasın
+            val desiredPeek = screenHeight - anchorY
+
+            behavior.peekHeight = desiredPeek
+            behavior.isFitToContents = false
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
     }
 
 
