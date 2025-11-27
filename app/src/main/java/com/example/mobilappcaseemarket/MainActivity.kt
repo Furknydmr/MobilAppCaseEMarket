@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         // Ekran yüksekliğini al
         val screenHeight = resources.displayMetrics.heightPixels
-        val iconSize = (screenHeight * 0.05).toInt()
+        val iconSize = (screenHeight * 0.04).toInt()
 
         // BottomNavigationView yüksekliğini %10 yapmak
         binding.bottomNav.itemIconSize = iconSize
