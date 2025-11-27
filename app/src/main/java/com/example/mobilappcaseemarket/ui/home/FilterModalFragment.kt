@@ -1,21 +1,17 @@
 package com.example.mobilappcaseemarket.ui.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.mobilappcaseemarket.R
-import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class FilterModalFragment : BottomSheetDialogFragment() {
+import androidx.fragment.app.setFragmentResult
 
-    private lateinit var viewModel: HomeViewModel
+class FilterModalFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,33 +23,40 @@ class FilterModalFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repo = ProductRepository()
-
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            HomeViewModelFactory(repo)
-        )[HomeViewModel::class.java]
+        view.findViewById<Button>(R.id.btnDefault).setOnClickListener {
+            sendResult("DEFAULT")
+        }
 
         view.findViewById<Button>(R.id.btnPriceAsc).setOnClickListener {
-            viewModel.sortByPriceAsc()
-            dismiss()
+            sendResult("PRICE_ASC")
         }
+
         view.findViewById<Button>(R.id.btnPriceDesc).setOnClickListener {
-            viewModel.sortByPriceDesc()
-            dismiss()
+            sendResult("PRICE_DESC")
         }
+
         view.findViewById<Button>(R.id.btnNameAZ).setOnClickListener {
-            viewModel.sortByNameAZ()
-            dismiss()
+            sendResult("NAME_ASC")
         }
+
         view.findViewById<Button>(R.id.btnNameZA).setOnClickListener {
-            viewModel.sortByNameZA()
-            dismiss()
+            sendResult("NAME_DESC")
         }
 
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener {
             dismiss()
         }
     }
+
+    private fun sendResult(type: String) {
+        setFragmentResult(
+            "filter_result",
+            Bundle().apply {
+                putString("sort_type", type)
+            }
+        )
+        dismiss()
+    }
 }
+
 

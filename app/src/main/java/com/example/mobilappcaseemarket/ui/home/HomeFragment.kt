@@ -3,33 +3,24 @@ package com.example.mobilappcaseemarket.ui.home
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.widget.EditText
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.mobilappcaseemarket.MainActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mobilappcaseemarket.R
-import com.example.mobilappcaseemarket.data.local.AppDatabase
-import com.example.mobilappcaseemarket.data.model.Product
-import com.example.mobilappcaseemarket.data.repository.CartRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -41,83 +32,89 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val searchView = view.findViewById<SearchView>(R.id.search)
 
-        //  1) ViewModel'i Activity scope'unda oluşturuyoruz
-        // Böylece Home, Detail ve Cart ekranları aynı sepet verisini paylaşır
+        // Modal'dan gelen yanıtı dinle
+        setFragmentResultListener("filter_result") { _, bundle ->
+            when (bundle.getString("sort_type")) {
+                "DEFAULT" -> {
+                    // Search temizle
+                    searchView.setQuery("", false)
+                    searchView.clearFocus()
+
+                    // Tüm filtreleri kaldır → tüm ürünleri getir
+                    viewModel.updateFilter(
+                        viewModel.filterOptions.copy(
+                            searchQuery = "",
+                            sortType = SortType.NONE
+                        )
+                    )
+                }
+                "PRICE_ASC" -> applySort(SortType.PRICE_ASC)
+                "PRICE_DESC" -> applySort(SortType.PRICE_DESC)
+                "NAME_ASC" -> applySort(SortType.NAME_ASC)
+                "NAME_DESC" -> applySort(SortType.NAME_DESC)
+            }
+        }
+
+
+        // CART ViewModel
         cartViewModel = ViewModelProvider(
             requireActivity(),
             CartViewModel.CartViewModelFactory(requireContext())
         )[CartViewModel::class.java]
 
-        //Uygulama açılır açılmaz mevcut sepet durumunu yükler
         cartViewModel.loadCart()
 
-
-
+        // ORIENTATION
         val orientation = resources.configuration.orientation
-
         val screenHeight = resources.displayMetrics.heightPixels
         val imageHeight = (screenHeight * 0.14).toInt()
         val searchHeight = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             (screenHeight * 0.05).toInt()
-        } else {
-            (screenHeight * 0.10).toInt()
-        }
+        } else (screenHeight * 0.10).toInt()
 
-        Log.d("HOME_DEBUG", "Screen Height: $screenHeight")
-        Log.d("HOME_DEBUG", "Image Height (%20): $imageHeight")
-
-
-
-        // --- RECYCLER VIEW ---
+        // RECYCLER VIEW
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // --- SEARCH VIEW RENK AYARI ---
-        val searchView = view.findViewById<SearchView>(R.id.search)
+        // SEARCHVIEW TASARIM
+
         val params = searchView.layoutParams
         params.height = searchHeight
         searchView.layoutParams = params
+
         val magId = searchView.context.resources.getIdentifier("android:id/search_mag_icon", null, null)
         val magImage = searchView.findViewById<ImageView>(magId)
-        // 🎨 İkon rengini değiştir
-        magImage?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.gray))   // istediğin renk
+        magImage?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.gray))
 
         val searchEditText = searchView.findViewById<EditText>(
             resources.getIdentifier("android:id/search_src_text", null, null)
         )
-
         searchEditText?.apply {
             setTextColor(Color.BLACK)
             setHintTextColor(Color.GRAY)
         }
 
-
+        // FILTER BUTTON
         val btnSelectFilter = view.findViewById<Button>(R.id.btnSelectFilter)
-
         btnSelectFilter.setOnClickListener {
             openFilterModalBelowButton(btnSelectFilter)
         }
 
-
-
-
-
-
-        // --- VIEWMODEL BAĞLAMA ---
+        // HOME VIEWMODEL
         val repo = ProductRepository()
         viewModel = ViewModelProvider(
             this,
             HomeViewModelFactory(repo)
         )[HomeViewModel::class.java]
 
+        // ADAPTER
         val adapter = ProductAdapter(
             mutableListOf(),
             imageHeight,
@@ -130,64 +127,51 @@ class HomeFragment : Fragment() {
                 cartViewModel.addProductToCart(product)
             }
         )
-
         recyclerView.adapter = adapter
 
+        // SEARCHVIEW — yeni filtre yapısı ile bağlandı!
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
+            override fun onQueryTextSubmit(query: String?): Boolean = false
             override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.search(newText ?: "")
+
+                viewModel.updateFilter(
+                    FilterOptions(
+                        searchQuery = newText.orEmpty(),
+                        sortType = viewModel.filterOptions.sortType
+                    )
+                )
                 return true
             }
         })
 
-
-
-
-        // --- API'DEN VERİYİ ÇEK ---
+        // ÜRÜNLERİ YÜKLE
         viewModel.fetchProducts()
 
+        // OBSERVE LIST
         viewModel.productList.observe(viewLifecycleOwner) { list ->
-            Log.d("HOME_DEBUG", "Product list updated")
-            val adapter = recyclerView.adapter as ProductAdapter
             adapter.updateList(list)
         }
-
-
 
         addInfiniteScroll()
     }
 
+
+    // -----------------------------------------------------------
+    // INFINITE SCROLL
+    // -----------------------------------------------------------
     private fun addInfiniteScroll() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                Log.d("SCROLL", "dy=$dy")
-
-                if (dy <= 0) {
-                    Log.d("SCROLL", "Yukarı kaydırma → iptal")
-                    return
-                }
+                if (dy <= 0) return
 
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val lastVisible = layoutManager.findLastVisibleItemPosition()
+                val total = layoutManager.itemCount
 
-                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-                val totalItemCount = layoutManager.itemCount
-
-                Log.d("SCROLL", "lastVisible=$lastVisibleItem total=$totalItemCount")
-
-                val isAtEnd = lastVisibleItem >= totalItemCount - 2
-                Log.d("SCROLL", "isAtEnd=$isAtEnd")
-
-                Log.d("SCROLL", "isLoading=${viewModel.isLoading.value}")
-
-                if (isAtEnd && viewModel.isLoading.value == false) {
-                    Log.d("SCROLL", "🚀 loadNextPage() çağırıldı!")
+                if (lastVisible >= total - 2 && viewModel.isLoading.value == false) {
                     viewModel.loadNextPage()
                 }
             }
@@ -195,26 +179,29 @@ class HomeFragment : Fragment() {
     }
 
 
+    // -----------------------------------------------------------
+    // FILTER MODAL — Sort seçimi burada güncelle
+    // -----------------------------------------------------------
+    fun applySort(option: SortType) {
+        viewModel.updateFilter(
+            viewModel.filterOptions.copy(sortType = option)
+        )
+    }
+
     private fun openFilterModalBelowButton(anchorView: View) {
         val modal = FilterModalFragment()
-
         modal.show(parentFragmentManager, "FilterModal")
 
         modal.dialog?.setOnShowListener {
-
             val bottomSheet =
                 modal.dialog!!.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
 
-            // Butonun ekrandaki Y pozisyonu
             val location = IntArray(2)
             anchorView.getLocationOnScreen(location)
             val anchorY = location[1] + anchorView.height
 
-            // Ekran yüksekliği
             val screenHeight = resources.displayMetrics.heightPixels
-
-            // Modalın peek-height’ı tam butonun altından başlasın
             val desiredPeek = screenHeight - anchorY
 
             behavior.peekHeight = desiredPeek
@@ -222,7 +209,4 @@ class HomeFragment : Fragment() {
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
-
-
-
 }

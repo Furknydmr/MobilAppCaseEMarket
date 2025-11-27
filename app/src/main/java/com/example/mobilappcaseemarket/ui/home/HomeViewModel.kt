@@ -10,35 +10,28 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: ProductRepository) : ViewModel() {
 
-    // View’da gösterilecek ürün listesi
-    val productList = MutableLiveData<List<Product>>()
+    val productList = MutableLiveData<List<Product>>()         // Ekranda görünen liste
     val isLoading = MutableLiveData<Boolean>()
 
-    // API’den gelen tüm orijinal ürünler
-    private var allProducts: List<Product> = emptyList()
+    private var allProducts: List<Product> = emptyList()       // API’den gelen ham data
+    private var filteredProducts: List<Product> = emptyList()  // Filtrelenmiş hal
 
-    // Filtrelenmiş & sıralanmış ürünler
-    private var filteredProducts: List<Product> = emptyList()
+    var filterOptions = FilterOptions()  //🔥 Tek noktadan filtre/sort yönetimi
 
     private var currentIndex = 0
     private val pageSize = 10
-
     private var isLastPage = false
 
 
-    // ************************************
-    // STEP 1 — API’den ürünleri al (1 defa)
-    // ************************************
+    // ---------------------------------------------------------
+    // 1) Ürünleri API’den çek ve ilk sayfayı yükle
+    // ---------------------------------------------------------
     fun fetchProducts() {
         viewModelScope.launch {
             try {
                 isLoading.value = true
-
                 allProducts = repository.getProducts()
-                filteredProducts = allProducts
-
-                resetAndLoad()
-
+                applyFilters()
             } finally {
                 isLoading.value = false
             }
@@ -46,41 +39,45 @@ class HomeViewModel(private val repository: ProductRepository) : ViewModel() {
     }
 
 
-    // ************************************
-    // STEP 2 — Pagination yapısı
-    // ************************************
-    fun loadNextPage() {
-
-        Log.d("VM_PAGING", "loadNextPage ÇAĞIRILDI")
-        Log.d("VM_PAGING", "currentIndex=$currentIndex size=${filteredProducts.size}")
-
-        if (isLastPage) {
-            Log.d("VM_PAGING", "❌ Son sayfa → yeni ürün yok")
-            return
-        }
-
-        val nextIndex = (currentIndex + pageSize).coerceAtMost(filteredProducts.size)
-        Log.d("VM_PAGING", "nextIndex=$nextIndex")
-
-        val nextChunk = filteredProducts.subList(currentIndex, nextIndex)
-        Log.d("VM_PAGING", "Yüklenen ürün sayısı: ${nextChunk.size}")
-
-        val updatedList = (productList.value ?: emptyList()) + nextChunk
-        productList.value = updatedList
-
-        Log.d("VM_PAGING", "Toplam gösterilen ürün: ${updatedList.size}")
-
-        currentIndex = nextIndex
-        Log.d("VM_PAGING", "Yeni currentIndex: $currentIndex")
-
-        if (currentIndex >= filteredProducts.size) {
-            isLastPage = true
-            Log.d("VM_PAGING", "🎉 TÜM ürünler yüklendi → isLastPage=true")
-        }
+    // ---------------------------------------------------------
+    // 2) Filtre veya Sort değiştiğinde tetiklenen fonksiyon
+    // ---------------------------------------------------------
+    fun updateFilter(newOptions: FilterOptions) {
+        filterOptions = newOptions
+        applyFilters()
     }
 
 
+    // ---------------------------------------------------------
+    // 3) Tüm filtreleri birleştir ve listeyi yeniden oluştur
+    // ---------------------------------------------------------
+    private fun applyFilters() {
+        var result = allProducts
 
+        // 🔍 Search
+        if (filterOptions.searchQuery.isNotBlank()) {
+            result = result.filter {
+                it.name.contains(filterOptions.searchQuery, ignoreCase = true)
+            }
+        }
+
+        // 🔄 Sort
+        result = when (filterOptions.sortType) {
+            SortType.PRICE_ASC -> result.sortedBy { it.price.toFloat() }
+            SortType.PRICE_DESC -> result.sortedByDescending { it.price.toFloat() }
+            SortType.NAME_ASC -> result.sortedBy { it.name }
+            SortType.NAME_DESC -> result.sortedByDescending { it.name }
+            else -> result
+        }
+
+        filteredProducts = result
+        resetAndLoad()
+    }
+
+
+    // ---------------------------------------------------------
+    // 4) Paging
+    // ---------------------------------------------------------
     private fun resetAndLoad() {
         currentIndex = 0
         isLastPage = false
@@ -88,44 +85,19 @@ class HomeViewModel(private val repository: ProductRepository) : ViewModel() {
         loadNextPage()
     }
 
+    fun loadNextPage() {
+        if (isLastPage) return
 
-    // ************************************
-    // STEP 3 — Search (Local)
-    // ************************************
-    fun search(query: String) {
-        filteredProducts = if (query.isBlank()) {
-            allProducts
-        } else {
-            allProducts.filter {
-                it.name.contains(query, ignoreCase = true)
-            }
+        val nextIndex = (currentIndex + pageSize).coerceAtMost(filteredProducts.size)
+        val nextChunk = filteredProducts.subList(currentIndex, nextIndex)
+
+        val updated = (productList.value ?: emptyList()) + nextChunk
+        productList.value = updated
+
+        currentIndex = nextIndex
+
+        if (currentIndex >= filteredProducts.size) {
+            isLastPage = true
         }
-
-        resetAndLoad()
-    }
-
-
-    // ************************************
-    // STEP 4 — Sorting (Local)
-    // ************************************
-    fun sortByPriceAsc() {
-        filteredProducts = filteredProducts.sortedBy { it.price.toFloat() }
-        resetAndLoad()
-    }
-
-    fun sortByPriceDesc() {
-        filteredProducts = filteredProducts.sortedByDescending { it.price.toFloat() }
-        resetAndLoad()
-    }
-
-    fun sortByNameAZ() {
-        filteredProducts = filteredProducts.sortedBy { it.name }
-        resetAndLoad()
-    }
-
-    fun sortByNameZA() {
-        filteredProducts = filteredProducts.sortedByDescending { it.name }
-        resetAndLoad()
     }
 }
-

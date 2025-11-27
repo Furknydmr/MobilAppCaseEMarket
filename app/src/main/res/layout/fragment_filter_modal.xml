@@ -27,6 +27,14 @@
         android:layout_marginTop="12dp"
         android:layout_marginBottom="20dp"/>
 
+    <Button
+        android:id="@+id/btnDefault"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Varsayılan"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
     <!-- FILTER BUTTONS -->
     <Button
         android:id="@+id/btnPriceAsc"
@@ -34,7 +42,8 @@
         android:layout_height="48dp"
         android:text="Fiyat Artan"
         android:textAllCaps="false"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:layout_marginTop="12dp"/>
 
     <Button
         android:id="@+id/btnPriceDesc"
