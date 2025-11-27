@@ -6,13 +6,12 @@ import com.example.mobilappcaseemarket.data.remote.RetrofitClient.api
 class ProductRepository {
     suspend fun getProducts() = RetrofitClient.api.getProducts()
 
-
-    // --- YENİ EKLENECEK FONKSİYON ---
     suspend fun getProductById(productId: String): Product {
         val allProducts = api.getProducts()
 
         return allProducts.find { it.id == productId }
             ?: throw Exception("Ürün bulunamadı: $productId")
     }
+
 }
 

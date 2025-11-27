@@ -6,76 +6,126 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: ProductRepository) : ViewModel() {
 
-    val productList = MutableLiveData<MutableList<Product>>(mutableListOf())
+    // View’da gösterilecek ürün listesi
+    val productList = MutableLiveData<List<Product>>()
     val isLoading = MutableLiveData<Boolean>()
 
+    // API’den gelen tüm orijinal ürünler
     private var allProducts: List<Product> = emptyList()
+
+    // Filtrelenmiş & sıralanmış ürünler
+    private var filteredProducts: List<Product> = emptyList()
+
     private var currentIndex = 0
-    private val pageSize = 4
+    private val pageSize = 10
+
     private var isLastPage = false
 
 
-    // ✔ fetchProducts KALDI, ama artık sadece TÜM ürünleri alıyor
+    // ************************************
+    // STEP 1 — API’den ürünleri al (1 defa)
+    // ************************************
     fun fetchProducts() {
         viewModelScope.launch {
             try {
                 isLoading.value = true
-                Log.d("VM_FETCH", "Tüm ürünler API'den çekiliyor...")
-                allProducts = repository.getProducts()  // tüm ürünleri çek
-                Log.d("VM_FETCH", "API'den toplam ürün: ${allProducts.size}")
 
-                // İlk sayfayı yükle
-                loadNextPage()
+                allProducts = repository.getProducts()
+                filteredProducts = allProducts
 
-            } catch (e: Exception) {
-                Log.e("VM_ERROR", "Ürünler alınırken hata oluştu: ${e.message}")
-                e.printStackTrace()
+                resetAndLoad()
+
             } finally {
-                Log.d("VM_FETCH", "fetchProducts() tamamlandı.")
                 isLoading.value = false
             }
         }
     }
 
 
-    // 🎯 Scroll oldukça 8’er 8’er ekleyen fonksiyon
+    // ************************************
+    // STEP 2 — Pagination yapısı
+    // ************************************
     fun loadNextPage() {
-        if (isLastPage){
-            Log.d("VM_PAGING", "Son sayfaya ulaşıldı, daha fazla ürün yok.")
+
+        Log.d("VM_PAGING", "loadNextPage ÇAĞIRILDI")
+        Log.d("VM_PAGING", "currentIndex=$currentIndex size=${filteredProducts.size}")
+
+        if (isLastPage) {
+            Log.d("VM_PAGING", "❌ Son sayfa → yeni ürün yok")
             return
         }
 
-        viewModelScope.launch {
-            Log.d("VM_PAGING", "Yeni sayfa için delay başlıyor...")
+        val nextIndex = (currentIndex + pageSize).coerceAtMost(filteredProducts.size)
+        Log.d("VM_PAGING", "nextIndex=$nextIndex")
 
-            // ⏳ 1 saniye loading efekti
-            delay(1000)
-            Log.d("VM_PAGING", "bekliyor")
+        val nextChunk = filteredProducts.subList(currentIndex, nextIndex)
+        Log.d("VM_PAGING", "Yüklenen ürün sayısı: ${nextChunk.size}")
 
-            val nextIndex = (currentIndex + pageSize).coerceAtMost(allProducts.size)
-            Log.d("VM_PAGING", "Sayfa yükleniyor... currentIndex=$currentIndex → nextIndex=$nextIndex")
+        val updatedList = (productList.value ?: emptyList()) + nextChunk
+        productList.value = updatedList
 
-            val nextChunk = allProducts.subList(currentIndex, nextIndex)
-            Log.d("VM_PAGING", "Bu sayfada yüklenecek ürün sayısı: ${nextChunk.size}")
+        Log.d("VM_PAGING", "Toplam gösterilen ürün: ${updatedList.size}")
 
-            val currentList = productList.value ?: mutableListOf()
-            currentList.addAll(nextChunk)
-            productList.value = currentList
+        currentIndex = nextIndex
+        Log.d("VM_PAGING", "Yeni currentIndex: $currentIndex")
 
-            Log.d("VM_PAGING", "Toplam gösterilen ürün sayısı: ${currentList.size}")
-
-            currentIndex = nextIndex
-
-            if (currentIndex >= allProducts.size) {
-                isLastPage = true
-                Log.d("VM_PAGING", "TÜM ürünler yüklendi. Son sayfadasın 🎉")
-            }
+        if (currentIndex >= filteredProducts.size) {
+            isLastPage = true
+            Log.d("VM_PAGING", "🎉 TÜM ürünler yüklendi → isLastPage=true")
         }
     }
 
+
+
+    private fun resetAndLoad() {
+        currentIndex = 0
+        isLastPage = false
+        productList.value = emptyList()
+        loadNextPage()
+    }
+
+
+    // ************************************
+    // STEP 3 — Search (Local)
+    // ************************************
+    fun search(query: String) {
+        filteredProducts = if (query.isBlank()) {
+            allProducts
+        } else {
+            allProducts.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
+        }
+
+        resetAndLoad()
+    }
+
+
+    // ************************************
+    // STEP 4 — Sorting (Local)
+    // ************************************
+    fun sortByPriceAsc() {
+        filteredProducts = filteredProducts.sortedBy { it.price.toFloat() }
+        resetAndLoad()
+    }
+
+    fun sortByPriceDesc() {
+        filteredProducts = filteredProducts.sortedByDescending { it.price.toFloat() }
+        resetAndLoad()
+    }
+
+    fun sortByNameAZ() {
+        filteredProducts = filteredProducts.sortedBy { it.name }
+        resetAndLoad()
+    }
+
+    fun sortByNameZA() {
+        filteredProducts = filteredProducts.sortedByDescending { it.name }
+        resetAndLoad()
+    }
 }
+

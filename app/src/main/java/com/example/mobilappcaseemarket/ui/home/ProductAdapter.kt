@@ -19,6 +19,7 @@ class ProductAdapter(
     private val onAddClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
+
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val img = itemView.findViewById<ImageView>(R.id.imgProduct)
         val name = itemView.findViewById<TextView>(R.id.txtName)

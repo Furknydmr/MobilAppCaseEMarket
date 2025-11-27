@@ -34,8 +34,8 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: HomeViewModel
     private lateinit var cartViewModel: CartViewModel
-    val productList = MutableLiveData<MutableList<Product>>()
     private var userIsScrolling = false
+    private lateinit var adapter: ProductAdapter
 
 
 
@@ -101,6 +101,9 @@ class HomeFragment : Fragment() {
             setHintTextColor(Color.GRAY)
         }
 
+
+
+
         // --- VIEWMODEL BAĞLAMA ---
         val repo = ProductRepository()
         viewModel = ViewModelProvider(
@@ -123,57 +126,67 @@ class HomeFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.search(newText ?: "")
+                return true
+            }
+        })
+
+
+
 
         // --- API'DEN VERİYİ ÇEK ---
         viewModel.fetchProducts()
 
-
-        // --- GÖZLEMLE ---
-
         viewModel.productList.observe(viewLifecycleOwner) { list ->
-            Log.d("HOME_DEBUG", "Product list updated: ${list.size} items")
-
+            Log.d("HOME_DEBUG", "Product list updated")
             val adapter = recyclerView.adapter as ProductAdapter
             adapter.updateList(list)
         }
 
+
+
         addInfiniteScroll()
-
-
-
     }
+
     private fun addInfiniteScroll() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    userIsScrolling = true
-                }
-            }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (!userIsScrolling) return  // ❗ Kullanıcı gerçekten scroll etmeden eklenmesi engellendi!
+                Log.d("SCROLL", "dy=$dy")
+
+                if (dy <= 0) {
+                    Log.d("SCROLL", "Yukarı kaydırma → iptal")
+                    return
+                }
 
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val visibleItemCount = layoutManager.childCount
+
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
                 val totalItemCount = layoutManager.itemCount
-                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
-                val reachedEnd = firstVisibleItem + visibleItemCount >= totalItemCount - 4
+                Log.d("SCROLL", "lastVisible=$lastVisibleItem total=$totalItemCount")
 
-                if (reachedEnd) {
-                    Log.d("SCROLL", "KULLANICI scroll ile SONa geldi → loadNextPage()")
+                val isAtEnd = lastVisibleItem >= totalItemCount - 2
+                Log.d("SCROLL", "isAtEnd=$isAtEnd")
 
-                    userIsScrolling = false  // ❗ bir kere tetiklenmesini sağlıyor
+                Log.d("SCROLL", "isLoading=${viewModel.isLoading.value}")
+
+                if (isAtEnd && viewModel.isLoading.value == false) {
+                    Log.d("SCROLL", "🚀 loadNextPage() çağırıldı!")
                     viewModel.loadNextPage()
                 }
             }
         })
     }
+
 
 
 }
