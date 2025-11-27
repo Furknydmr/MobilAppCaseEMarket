@@ -1,5 +1,6 @@
 package com.example.mobilappcaseemarket.ui.home
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,8 @@ import com.example.mobilappcaseemarket.data.model.Product
 class ProductAdapter(
     private val list: List<Product>,
     private val imageHeight: Int,
-    private val onItemClick: (Product) -> Unit
+    private val onItemClick: (Product) -> Unit,
+    private val onAddClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -45,6 +47,11 @@ class ProductAdapter(
 
         holder.itemView.setOnClickListener {
             onItemClick(item)
+        }
+        // 🔹 Add butonuna tıklayınca → Sepete ekle
+        holder.btnAdd.setOnClickListener {
+            onAddClick(item)
+            Log.d("addProduct", "butona tıklandı. Id:${item.id} ")
         }
     }
 

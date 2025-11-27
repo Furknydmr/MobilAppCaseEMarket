@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.mobilappcaseemarket.R
+import com.example.mobilappcaseemarket.data.model.CartItem
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.databinding.FragmentProductDetailBinding
+import com.example.mobilappcaseemarket.ui.cart.CartViewModel
 
 class ProductDetailFragment : Fragment() {
     private var _binding: FragmentProductDetailBinding? = null
@@ -20,9 +22,15 @@ class ProductDetailFragment : Fragment() {
 
     private lateinit var viewModel: ProductDetailViewModel
     private var productId: String? = null
+    private lateinit var cartViewModel: CartViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val cartFactory = CartViewModel.CartViewModelFactory(requireContext())
+        cartViewModel = ViewModelProvider(this, cartFactory)[CartViewModel::class.java]
+
 
         productId = requireArguments().getString("productId")
         Log.d("DETAIL_DEBUG", "Gelen productId: $productId")
@@ -55,6 +63,23 @@ class ProductDetailFragment : Fragment() {
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+        binding.btnAddToCart.setOnClickListener {
+
+            Log.d("DETAIL_ADD", "➡️ Add to Cart butonuna tıklandı")
+            val p = viewModel.product.value ?: return@setOnClickListener
+
+            if (p == null) {
+                Log.e("DETAIL_ADD", "Ürün bulunamadı (ViewModel.product null)")
+                return@setOnClickListener
+            }
+
+            Log.d("DETAIL_ADD", "📦 Ürün bulundu: id=${p.id}, name=${p.name}, price=${p.price}")
+
+            cartViewModel.addProductToCart(p )
+
+            Log.d("DETAIL_ADD", "ViewModel'e gönderildi.")
+        }
+
 
         //  🔥 ÜRÜN GÖZLEMİ
         viewModel.product.observe(viewLifecycleOwner) { product ->
@@ -63,6 +88,7 @@ class ProductDetailFragment : Fragment() {
                 Log.e("DETAIL_DEBUG", "Ürün bulunamadı!")
                 return@observe
             }
+
 
             // BAŞLIK
             binding.txtToolbarTitle.text = product.name
@@ -79,6 +105,7 @@ class ProductDetailFragment : Fragment() {
                 .load(product.image)
                 .into(binding.imgProduct)
         }
+
     }
 
 

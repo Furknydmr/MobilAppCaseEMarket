@@ -18,12 +18,17 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.mobilappcaseemarket.MainActivity
 import com.example.mobilappcaseemarket.R
+import com.example.mobilappcaseemarket.data.local.AppDatabase
+import com.example.mobilappcaseemarket.data.repository.CartRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
+import com.example.mobilappcaseemarket.ui.cart.CartViewModel
 
 class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: HomeViewModel
+    private lateinit var cartViewModel: CartViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +41,24 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        val db = AppDatabase.getDatabase(requireContext())
+        val cartRepository = CartRepository(db.cartDao())
+
+        val cartFactory = CartViewModel.CartViewModelFactory(requireContext())
+
+        //  1) ViewModel'i Activity scope'unda oluşturuyoruz
+        // Böylece Home, Detail ve Cart ekranları aynı sepet verisini paylaşır
+        cartViewModel = ViewModelProvider(
+            requireActivity(),
+            CartViewModel.CartViewModelFactory(requireContext())
+        )[CartViewModel::class.java]
+
+        //Uygulama açılır açılmaz mevcut sepet durumunu yükler
+        cartViewModel.loadCart()
+
+
 
         val orientation = resources.configuration.orientation
 
@@ -93,18 +116,24 @@ class HomeFragment : Fragment() {
             Log.d("HOME_DEBUG", "Product list received: ${list.size} items")
             Log.d("HOME_DEBUG", "Creating adapter with imageHeight: $imageHeight")
 
-            recyclerView.adapter = ProductAdapter(list, imageHeight) { product ->
-                val bundle = Bundle()
-                bundle.putString("productId", product.id)
+            recyclerView.adapter = ProductAdapter(
+                list,
+                imageHeight,
 
-                findNavController().navigate(
-                    R.id.fragment_productdetail,
-                    bundle
-                )
+                // 1) Ürün kartına tıklayınca → Detay ekranına git
+                onItemClick = { product ->
+                    // detay ekranına gitme
+                    val bundle = Bundle()
+                    bundle.putString("productId", product.id)
+                    findNavController().navigate(R.id.fragment_productdetail, bundle)
+                },
 
-                Log.d("HOME_DEBUG", "Clicked product: ${product.name}")
-                // TODO: detay ekranına git
-            }
+                // 2) Add-to-cart butonuna tıklayınca → sepete ekle
+                onAddClick = { product ->
+                    cartViewModel.addProductToCart(product)
+                }
+            )
+
         }
 
 
