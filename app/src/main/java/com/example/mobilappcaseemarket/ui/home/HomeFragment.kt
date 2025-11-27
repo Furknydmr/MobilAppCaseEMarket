@@ -15,19 +15,28 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import com.example.mobilappcaseemarket.MainActivity
 import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.local.AppDatabase
+import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.data.repository.CartRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: HomeViewModel
     private lateinit var cartViewModel: CartViewModel
+    val productList = MutableLiveData<MutableList<Product>>()
+    private var userIsScrolling = false
+
 
 
     override fun onCreateView(
@@ -41,12 +50,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        val db = AppDatabase.getDatabase(requireContext())
-        val cartRepository = CartRepository(db.cartDao())
-
-        val cartFactory = CartViewModel.CartViewModelFactory(requireContext())
 
         //  1) ViewModel'i Activity scope'unda oluşturuyoruz
         // Böylece Home, Detail ve Cart ekranları aynı sepet verisini paylaşır
@@ -105,6 +108,22 @@ class HomeFragment : Fragment() {
             HomeViewModelFactory(repo)
         )[HomeViewModel::class.java]
 
+        val adapter = ProductAdapter(
+            mutableListOf(),
+            imageHeight,
+            onItemClick = { product ->
+                val bundle = Bundle()
+                bundle.putString("productId", product.id)
+                findNavController().navigate(R.id.fragment_productdetail, bundle)
+            },
+            onAddClick = { product ->
+                cartViewModel.addProductToCart(product)
+            }
+        )
+
+        recyclerView.adapter = adapter
+
+
         // --- API'DEN VERİYİ ÇEK ---
         viewModel.fetchProducts()
 
@@ -112,31 +131,49 @@ class HomeFragment : Fragment() {
         // --- GÖZLEMLE ---
 
         viewModel.productList.observe(viewLifecycleOwner) { list ->
+            Log.d("HOME_DEBUG", "Product list updated: ${list.size} items")
 
-            Log.d("HOME_DEBUG", "Product list received: ${list.size} items")
-            Log.d("HOME_DEBUG", "Creating adapter with imageHeight: $imageHeight")
-
-            recyclerView.adapter = ProductAdapter(
-                list,
-                imageHeight,
-
-                // 1) Ürün kartına tıklayınca → Detay ekranına git
-                onItemClick = { product ->
-                    // detay ekranına gitme
-                    val bundle = Bundle()
-                    bundle.putString("productId", product.id)
-                    findNavController().navigate(R.id.fragment_productdetail, bundle)
-                },
-
-                // 2) Add-to-cart butonuna tıklayınca → sepete ekle
-                onAddClick = { product ->
-                    cartViewModel.addProductToCart(product)
-                }
-            )
-
+            val adapter = recyclerView.adapter as ProductAdapter
+            adapter.updateList(list)
         }
+
+        addInfiniteScroll()
 
 
 
     }
+    private fun addInfiniteScroll() {
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    userIsScrolling = true
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (!userIsScrolling) return  // ❗ Kullanıcı gerçekten scroll etmeden eklenmesi engellendi!
+
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+
+                val reachedEnd = firstVisibleItem + visibleItemCount >= totalItemCount - 4
+
+                if (reachedEnd) {
+                    Log.d("SCROLL", "KULLANICI scroll ile SONa geldi → loadNextPage()")
+
+                    userIsScrolling = false  // ❗ bir kere tetiklenmesini sağlıyor
+                    viewModel.loadNextPage()
+                }
+            }
+        })
+    }
+
+
 }

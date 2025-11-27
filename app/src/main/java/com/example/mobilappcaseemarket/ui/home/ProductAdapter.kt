@@ -13,7 +13,7 @@ import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.model.Product
 
 class ProductAdapter(
-    private val list: List<Product>,
+    private val list: MutableList<Product>,
     private val imageHeight: Int,
     private val onItemClick: (Product) -> Unit,
     private val onAddClick: (Product) -> Unit
@@ -56,4 +56,12 @@ class ProductAdapter(
     }
 
     override fun getItemCount(): Int = list.size
+
+    fun updateList(newList: List<Product>) {
+        list.clear()
+        list.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+
 }
