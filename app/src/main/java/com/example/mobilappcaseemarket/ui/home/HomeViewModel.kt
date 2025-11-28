@@ -10,22 +10,20 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewModel() {
 
-    val productList = MutableLiveData<List<Product>>()         // Ekranda görünen liste
+    val productList = MutableLiveData<List<Product>>()
     val isLoading = MutableLiveData<Boolean>()
 
-    private var allProducts: List<Product> = emptyList()       // API’den gelen ham data
-    private var filteredProducts: List<Product> = emptyList()  // Filtrelenmiş hal
+    private var allProducts: List<Product> = emptyList()
+    private var filteredProducts: List<Product> = emptyList()
 
-    var filterOptions = FilterOptions()  //🔥 Tek noktadan filtre/sort yönetimi
+    var filterOptions = FilterOptions()
 
     private var currentIndex = 0
     private val pageSize = 10
     private var isLastPage = false
 
 
-    // ---------------------------------------------------------
-    // 1) Ürünleri API’den çek ve ilk sayfayı yükle
-    // ---------------------------------------------------------
+
     fun fetchProducts() {
         viewModelScope.launch {
             try {
@@ -39,18 +37,14 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
     }
 
 
-    // ---------------------------------------------------------
-    // 2) Filtre veya Sort değiştiğinde tetiklenen fonksiyon
-    // ---------------------------------------------------------
+
     fun updateFilter(newOptions: FilterOptions) {
         filterOptions = newOptions
         applyFilters()
     }
 
 
-    // ---------------------------------------------------------
-    // 3) Tüm filtreleri birleştir ve listeyi yeniden oluştur
-    // ---------------------------------------------------------
+
     private fun applyFilters() {
         var result = allProducts
 
@@ -61,7 +55,7 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
             }
         }
 
-        // 🔄 Sort
+
         result = when (filterOptions.sortType) {
             SortType.PRICE_ASC -> result.sortedBy { it.price.toFloat() }
             SortType.PRICE_DESC -> result.sortedByDescending { it.price.toFloat() }
@@ -75,9 +69,7 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
     }
 
 
-    // ---------------------------------------------------------
-    // 4) Paging
-    // ---------------------------------------------------------
+
     private fun resetAndLoad() {
         currentIndex = 0
         isLastPage = false

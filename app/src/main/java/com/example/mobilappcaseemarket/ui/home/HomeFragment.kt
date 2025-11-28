@@ -47,9 +47,7 @@ class HomeFragment : Fragment() {
 
         val searchView = view.findViewById<SearchView>(R.id.search)
 
-        // ---------------------------
-        // FILTER MODAL RESULT LISTENER
-        // ---------------------------
+
         setFragmentResultListener("filter_result") { _, bundle ->
             when (bundle.getString("sort_type")) {
                 "DEFAULT" -> {
@@ -72,9 +70,6 @@ class HomeFragment : Fragment() {
         }
 
 
-        // ---------------------------
-        // CART VIEWMODEL
-        // ---------------------------
         cartViewModel = ViewModelProvider(
             requireActivity(),
             CartViewModel.CartViewModelFactory(requireContext())
@@ -83,9 +78,7 @@ class HomeFragment : Fragment() {
         cartViewModel.loadCart()
 
 
-        // ---------------------------
-        // ORIENTATION / SCREEN SIZE
-        // ---------------------------
+
         val orientation = resources.configuration.orientation
         val screenHeight = resources.displayMetrics.heightPixels
 
@@ -95,16 +88,10 @@ class HomeFragment : Fragment() {
         } else (screenHeight * 0.10).toInt()
 
 
-        // ---------------------------
-        // RECYCLERVIEW
-        // ---------------------------
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
 
-        // ---------------------------
-        // SEARCHVIEW TASARIM
-        // ---------------------------
         val params = searchView.layoutParams
         params.height = searchHeight
         searchView.layoutParams = params
@@ -122,18 +109,14 @@ class HomeFragment : Fragment() {
         }
 
 
-        // ---------------------------
-        // FILTER BUTTON
-        // ---------------------------
+
         val btnSelectFilter = view.findViewById<Button>(R.id.btnSelectFilter)
         btnSelectFilter.setOnClickListener {
             openFilterModalBelowButton(btnSelectFilter)
         }
 
 
-        // ---------------------------
-        // HOME VIEWMODEL
-        // ---------------------------
+
         val repo = ProductRepository()
         viewModel = ViewModelProvider(
             this,
@@ -141,22 +124,18 @@ class HomeFragment : Fragment() {
         )[HomeViewModel::class.java]
 
 
-        // ---------------------------
-        // ★★★ FAVOURITE VIEWMODEL OLUŞTURULDU
-        // ---------------------------
+
         val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
         val favRepo = FavouriteRepository(favDao)
         favouriteViewModel = FavouriteViewModel(favRepo)
 
 
-        // ---------------------------
-        // ADAPTER (FAVOURITE DAHİL!)
-        // ---------------------------
+
         val adapter = ProductAdapter(
             mutableListOf(),
             imageHeight,
-            favouriteViewModel = favouriteViewModel,      // ★ eklendi
-            lifecycleOwner = viewLifecycleOwner,          // ★ eklendi
+            favouriteViewModel = favouriteViewModel,
+            lifecycleOwner = viewLifecycleOwner,
 
             onItemClick = { product ->
                 val bundle = Bundle()
@@ -172,9 +151,7 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = adapter
 
 
-        // ---------------------------
-        // SEARCH FILTERING
-        // ---------------------------
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 
@@ -190,9 +167,7 @@ class HomeFragment : Fragment() {
         })
 
 
-        // ---------------------------
-        // LOAD PRODUCTS
-        // ---------------------------
+
         viewModel.fetchProducts()
 
         viewModel.productList.observe(viewLifecycleOwner) { list ->
@@ -203,9 +178,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    // ---------------------------
-    // INFINITE SCROLL
-    // ---------------------------
+
     private fun addInfiniteScroll() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 

@@ -9,10 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.model.CartItem
-import com.example.mobilappcaseemarket.data.model.Product
-import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.databinding.FragmentCartBinding
 
 class CartFragment : Fragment() {
@@ -41,7 +38,7 @@ class CartFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
 
-        cartViewModel.loadCart() // ilk yükleme
+        cartViewModel.loadCart()
     }
 
     private fun setupViewModel() {
@@ -77,7 +74,6 @@ class CartFragment : Fragment() {
     private fun updateTotalPrice(list: List<CartItem>) {
 
         val total = list.sumOf { item ->
-            // price zaten "19.90" veya "19" gibi geliyor
             val priceDouble = item.price.toDoubleOrNull() ?: 0.0
 
             priceDouble * item.quantity

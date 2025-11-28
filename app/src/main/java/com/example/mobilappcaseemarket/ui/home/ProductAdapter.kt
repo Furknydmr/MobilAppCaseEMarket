@@ -19,7 +19,7 @@ class ProductAdapter(
     private val imageHeight: Int,
     private val onItemClick: (Product) -> Unit,
     private val onAddClick: (Product) -> Unit,
-    private val favouriteViewModel: FavouriteViewModel, // ★ EKLENDİ
+    private val favouriteViewModel: FavouriteViewModel,
     private val lifecycleOwner: LifecycleOwner,
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -72,7 +72,6 @@ class ProductAdapter(
             )
         }
 
-        // ★★ Favori ikonuna tıklayınca toggleFavourite
         holder.imgFav.setOnClickListener {
             favouriteViewModel.toggleFavourite(item.id)
         }
@@ -85,6 +84,5 @@ class ProductAdapter(
         list.addAll(newList)
         notifyDataSetChanged()
     }
-
 
 }

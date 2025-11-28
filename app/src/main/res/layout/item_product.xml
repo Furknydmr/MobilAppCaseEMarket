@@ -27,7 +27,6 @@
                 android:scaleType="centerCrop"
                 android:background="#EAEAEA" />
 
-            <!-- ⭐ FAVORİ ICONU -->
             <ImageView
                 android:id="@+id/imgFavourite"
                 android:layout_width="wrap_content"

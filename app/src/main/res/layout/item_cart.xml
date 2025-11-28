@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:paddingVertical="12dp">
 
-    <!-- ÜRÜN ADI -->
     <TextView
         android:id="@+id/txtName"
         android:layout_width="0dp"
@@ -23,7 +22,6 @@
         app:layout_constraintHorizontal_bias="0"
         android:layout_marginEnd="12dp"/>
 
-    <!-- ÜRÜN FİYATI -->
     <TextView
         android:id="@+id/txtPrice"
         android:layout_width="wrap_content"
@@ -35,7 +33,6 @@
         app:layout_constraintTop_toBottomOf="@id/txtName"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- ===== QUANTITY CONTROL WRAPPER ===== -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutQty"
         android:layout_width="130dp"
@@ -44,7 +41,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- - BUTTON -->
         <TextView
             android:id="@+id/btnDecrease"
             android:layout_width="42dp"
@@ -58,7 +54,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <!-- QUANTITY -->
         <TextView
             android:id="@+id/txtQty"
             android:layout_width="42dp"
@@ -72,7 +67,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <!-- + BUTTON -->
         <TextView
             android:id="@+id/btnIncrease"
             android:layout_width="42dp"

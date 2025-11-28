@@ -41,13 +41,13 @@ class FavouriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // CART
+
         cartViewModel = ViewModelProvider(
             requireActivity(),
             CartViewModel.CartViewModelFactory(requireContext())
         )[CartViewModel::class.java]
 
-        // FAV VM
+
         val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
         val favRepo = FavouriteRepository(favDao)
         favouriteViewModel = FavouriteViewModel(favRepo)
@@ -77,14 +77,11 @@ class FavouriteFragment : Fragment() {
         binding.recyclerFavourite.adapter = adapter
 
 
-        // FAVORİ DEĞİŞİNCE LİSTEYİ GÜNCELLE
         favouriteViewModel.favourites.observe(viewLifecycleOwner) { favSet ->
             lifecycleScope.launch {
 
-                // suspend fun getProducts() → coroutine içinde çağırıyoruz
                 val allProducts = productRepo.getProducts()
 
-                // favori ürünleri filtrele
                 val favouriteProducts =
                     allProducts.filter { product -> favSet.contains(product.id) }
 

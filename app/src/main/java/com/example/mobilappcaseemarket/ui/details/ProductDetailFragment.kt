@@ -29,7 +29,6 @@ class ProductDetailFragment : Fragment() {
 
     private var productId: String = ""
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +53,6 @@ class ProductDetailFragment : Fragment() {
         favouriteViewModel = FavouriteViewModel(favRepo)
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +60,6 @@ class ProductDetailFragment : Fragment() {
         _binding = FragmentProductDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

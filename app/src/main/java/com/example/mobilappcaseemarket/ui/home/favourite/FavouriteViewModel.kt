@@ -10,14 +10,12 @@ class FavouriteViewModel(
     private val repository: FavouriteRepository
 ) : ViewModel() {
 
-    // Favori ürün IDsini tutacağız
-    val favourites = MutableLiveData<Set<String>>(emptySet())
 
+    val favourites = MutableLiveData<Set<String>>(emptySet())
     init {
         loadFavourites()
     }
 
-    // Veri tabanından tüm favorileri yükler
     fun loadFavourites() {
         viewModelScope.launch {
             val favList = repository.getAllFavourites()
@@ -25,7 +23,7 @@ class FavouriteViewModel(
         }
     }
 
-    // Favori ekle / çıkar
+
     fun toggleFavourite(productId: String) {
         viewModelScope.launch {
             val current = favourites.value ?: emptySet()
@@ -40,7 +38,6 @@ class FavouriteViewModel(
         }
     }
 
-    // UI → ürün favori mi?
     fun isFavourite(productId: String): Boolean {
         return favourites.value?.contains(productId) ?: false
     }

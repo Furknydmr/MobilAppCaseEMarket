@@ -8,7 +8,7 @@
     android:background="@color/white"
     tools:context=".ui.home.HomeFragment">
 
-    <!-- HEADER -->
+
     <TextView
         android:id="@+id/txtHeader"
         android:layout_width="0dp"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- SEARCH -->
+
     <SearchView
         android:id="@+id/search"
         android:layout_width="0dp"
@@ -37,7 +37,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- FILTER AREA -->
     <LinearLayout
         android:id="@+id/filterArea"
         android:layout_width="0dp"
@@ -84,7 +83,7 @@
     </LinearLayout>
 
 
-    <!-- PRODUCT GRID -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"

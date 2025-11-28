@@ -15,6 +15,7 @@
         android:name="com.example.mobilappcaseemarket.ui.cart.CartFragment"
         android:label="cart"
         tools:layout="@layout/fragment_cart" />
+
     <fragment
         android:id="@+id/nav_fav"
         android:name="com.example.mobilappcaseemarket.ui.home.favourite.FavouriteFragment"
@@ -31,6 +32,5 @@
             android:name="productId"
             app:argType="string" />
     </fragment>
-
 
 </navigation>

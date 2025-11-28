@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.model.Product
-import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 
 class FavouriteAdapter(
     private val list: MutableList<Product>,
@@ -57,7 +56,6 @@ class FavouriteAdapter(
         holder.favIcon.setOnClickListener {
             favouriteViewModel.toggleFavourite(item.id)
 
-            // Favoriden çıkarınca UI’dan da kaldır
             list.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, list.size)

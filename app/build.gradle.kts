@@ -60,9 +60,11 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
-// Coroutines (ViewModel içinde suspend fonksiyonları kullanabilmek için)
+
+// Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-// ViewModel & LiveData (MVVM için)
+
+// ViewModel & LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
     implementation(libs.glide)
@@ -71,11 +73,11 @@ dependencies {
 
 // JUnit
     testImplementation("junit:junit:4.13.2")
-// AndroidX Test (InstantTaskExecutorRule için)
+// AndroidX Test
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 // Coroutine Test
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-// Mockito (ileride lazım olabilir)
+// Mockito
     testImplementation("org.mockito:mockito-core:4.11.0")
 
 }

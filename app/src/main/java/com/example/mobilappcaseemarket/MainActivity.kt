@@ -17,13 +17,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
-        // Ekran yüksekliğini al
         val screenHeight = resources.displayMetrics.heightPixels
         val iconSize = (screenHeight * 0.04).toInt()
 
-        // BottomNavigationView yüksekliğini %10 yapmak
         binding.bottomNav.itemIconSize = iconSize
 
         binding.bottomNav.requestLayout()
@@ -31,7 +27,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // BottomNavigationView ile bağla
         binding.bottomNav.setupWithNavController(navController)
 
 

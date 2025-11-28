@@ -7,7 +7,6 @@
     android:background="@color/white"
     tools:context=".ui.cart.CartFragment">
 
-    <!-- ====== E-MARKET HEADER ====== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -26,7 +25,6 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <!-- ====== CONTENT AREA ====== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,7 +32,6 @@
         android:paddingHorizontal="16dp"
         android:paddingTop="12dp">
 
-        <!-- RECYCLER VIEW -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCart"
             android:layout_width="match_parent"
@@ -43,14 +40,12 @@
             android:clipToPadding="false"
             android:paddingBottom="16dp" />
 
-        <!-- ====== BOTTOM AREA ====== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- TOTAL -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
@@ -74,13 +69,11 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- Spacer -->
             <Space
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
-            <!-- COMPLETE BUTTON -->
             <Button
                 android:id="@+id/btnCheckout"
                 android:layout_width="140dp"
@@ -93,7 +86,6 @@
                 android:textColor="@color/white"/>
         </LinearLayout>
 
-        <!-- ALT TABBARI EZMEMESİN DİYE SAFE AREA SPACE -->
         <Space
             android:layout_width="match_parent"
             android:layout_height="18dp"/>

@@ -26,7 +26,6 @@ class CartAdapter(
     }
 
 
-
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         val item = items[position]
 

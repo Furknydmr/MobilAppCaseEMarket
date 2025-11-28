@@ -20,7 +20,6 @@ class CartViewModel(
     private val _cartItems = MutableLiveData<List<CartItem>>()
     val cartItems: LiveData<List<CartItem>> = _cartItems
 
-    // İlk çalıştırıldığında sepeti yükle
     fun loadCart() {
         viewModelScope.launch {
             val data = repository.getCartItems()
@@ -29,7 +28,6 @@ class CartViewModel(
         }
     }
 
-    // Sepete ekleme işlemi (Hem Home hem Detail ekranı buraya bağlanacak)
     fun addToCart(item: CartItem) {
 
         viewModelScope.launch {
@@ -41,7 +39,6 @@ class CartViewModel(
     }
 
 
-    // Ürün miktarını artır
     fun increaseQuantity(item: CartItem) {
         viewModelScope.launch {
             repository.increaseQuantity(item)
@@ -49,7 +46,6 @@ class CartViewModel(
         }
     }
 
-    // Ürün miktarını azalt
     fun decreaseQuantity(item: CartItem) {
         viewModelScope.launch {
             repository.decreaseQuantity(item)
@@ -57,7 +53,6 @@ class CartViewModel(
         }
     }
 
-    // Ürünü tamamen sil
     fun deleteItem(item: CartItem) {
         viewModelScope.launch {
             repository.deleteItem(item)
@@ -68,19 +63,18 @@ class CartViewModel(
     fun addProductToCart(product: Product) {
         viewModelScope.launch {
 
-            // Sepetteki ürünleri al
+
             val currentItems = repository.getCartItems()
 
-            // Bu ürün zaten var mı?
+
             val existingItem = currentItems.find { it.id == product.id }
 
             if (existingItem != null) {
-                // 🔥 Ürün zaten sepette → quantity +1
+
                 repository.increaseQuantity(existingItem)
-                loadCart()   // güncel listeyi yay
-                Log.d("CART_VM", "🔄 Ürün zaten var → quantity +1 yapıldı: ${existingItem.id}")
-            } else {
-                // 🆕 Ürün yok → yeni ekle
+                loadCart()
+
+                } else {
                 val item = CartItem(
                     id = product.id,
                     name = product.name,
@@ -90,11 +84,10 @@ class CartViewModel(
 
                 repository.addToCart(item)
                 loadCart()
-                Log.d("CART_VM", "🆕 Yeni ürün sepete eklendi: ${item.id}")
+
             }
         }
     }
-
 
     class CartViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
