@@ -1,6 +1,6 @@
 package com.example.mobilappcaseemarket.data.repository
 
-import android.util.Log
+
 import com.example.mobilappcaseemarket.data.local.CartDao
 import com.example.mobilappcaseemarket.data.model.CartItem
 
@@ -13,9 +13,7 @@ class CartRepository(private val dao: CartDao) {
 
     // Sepete ürün ekle
     suspend fun addToCart(item: CartItem) {
-        Log.d("CART_REPO", "➡️ DAO.addToCart çağrılıyor... item=$item")
         dao.addToCart(item)
-        Log.d("CART_REPO", "✔️ DAO.addToCart başarılı (Room'a yazıldı)")
     }
 
     // Miktarı artır

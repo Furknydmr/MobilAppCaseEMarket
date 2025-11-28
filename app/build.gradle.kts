@@ -69,4 +69,13 @@ dependencies {
 
     kapt("androidx.room:room-compiler:2.8.4")
 
+// JUnit
+    testImplementation("junit:junit:4.13.2")
+// AndroidX Test (InstantTaskExecutorRule için)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+// Coroutine Test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+// Mockito (ileride lazım olabilir)
+    testImplementation("org.mockito:mockito-core:4.11.0")
+
 }

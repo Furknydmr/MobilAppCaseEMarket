@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
+import com.example.mobilappcaseemarket.data.repository.ProductRepositoryInterface
 import kotlinx.coroutines.launch
 
-class ProductDetailViewModel(private val repo: ProductRepository) : ViewModel() {
+class ProductDetailViewModel(private val repo: ProductRepositoryInterface) : ViewModel() {
 
     val product = MutableLiveData<Product>()
 
@@ -18,7 +19,7 @@ class ProductDetailViewModel(private val repo: ProductRepository) : ViewModel() 
     }
 }
 
-class ProductDetailViewModelFactory(private val repo: ProductRepository)
+class ProductDetailViewModelFactory(private val repo: ProductRepositoryInterface)
     : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

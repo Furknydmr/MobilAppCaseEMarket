@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobilappcaseemarket.data.model.Product
-import com.example.mobilappcaseemarket.data.repository.ProductRepository
+import com.example.mobilappcaseemarket.data.repository.ProductRepositoryInterface
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val repository: ProductRepository) : ViewModel() {
+class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewModel() {
 
     val productList = MutableLiveData<List<Product>>()         // Ekranda görünen liste
     val isLoading = MutableLiveData<Boolean>()
