@@ -57,12 +57,12 @@
     <dimen name="rv_padding_top">20dp</dimen>
     <!-- fragment_home -->
 
+
     <!-- item_product -->
-    <!-- item_product (TABLET) -->
     <dimen name="iproduct_card_margin">14dp</dimen>
     <dimen name="iproduct_card_elevation">5dp</dimen>
     <dimen name="iproduct_card_corner_radius">12dp</dimen>
-    <dimen name="iproduct_card_inner_padding">10dp</dimen>
+    <dimen name="iproduct_card_inner_padding">6dp</dimen>
 
     <dimen name="iproduct_image_height">180dp</dimen>
     <dimen name="iproduct_fav_icon_margin">10dp</dimen>
@@ -81,9 +81,11 @@
     <!-- item_product -->
 
     <!-- fav fragment -->
+
     <dimen name="fav_screen_padding">16dp</dimen>
     <dimen name="fav_title_padding">12dp</dimen>
     <dimen name="fav_title_text_size">28sp</dimen>
+
     <!-- fav fragment -->
 
     <!-- iFav item -->

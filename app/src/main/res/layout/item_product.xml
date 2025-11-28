@@ -67,7 +67,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/iproduct_btn_height"
             android:layout_margin="@dimen/iproduct_btn_margin"
-            android:padding="@dimen/iproduct_btn_padding"
             android:text="Add to Cart"
             android:textAllCaps="false"
             android:textColor="@color/white"

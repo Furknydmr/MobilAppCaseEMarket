@@ -21,18 +21,20 @@ class CartViewModel(
     private val _cartItems = MutableLiveData<List<CartItem>>()
     val cartItems: LiveData<List<CartItem>> = _cartItems
 
+    private val _cartCount = MutableLiveData<Int>()
+    val cartCount: LiveData<Int> = _cartCount
+
     fun loadCart() {
         viewModelScope.launch {
             val data = repository.getCartItems()
+            _cartItems.value = data
 
-            _cartItems.value = repository.getCartItems()
+            _cartCount.value = data.sumOf { it.quantity }
         }
     }
 
     fun addToCart(item: CartItem) {
-
         viewModelScope.launch {
-
             repository.addToCart(item)
             loadCart()
         }
@@ -63,37 +65,31 @@ class CartViewModel(
         viewModelScope.launch {
 
             val currentItems = repository.getCartItems()
-
             val existingItem = currentItems.find { it.id == product.id }
 
             if (existingItem != null) {
-
                 repository.increaseQuantity(existingItem)
-                loadCart()
-
-                } else {
+            } else {
                 val item = CartItem(
                     id = product.id,
                     name = product.name,
                     price = product.price,
                     quantity = 1
                 )
-
                 repository.addToCart(item)
-                loadCart()
             }
+
+            loadCart()
         }
     }
 
     class CartViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
             val dao = AppDatabase.getDatabase(context).cartDao()
             val repo = CartRepository(dao)
-
             return CartViewModel(repo) as T
         }
     }
-
 }
+

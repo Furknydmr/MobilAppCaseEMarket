@@ -82,7 +82,7 @@ class HomeFragment : Fragment() {
         val orientation = resources.configuration.orientation
         val screenHeight = resources.displayMetrics.heightPixels
 
-        val imageHeight = (screenHeight * 0.16).toInt()
+        val imageHeight = (screenHeight * 0.2).toInt()
         val searchHeight = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             (screenHeight * 0.05).toInt()
         } else (screenHeight * 0.10).toInt()
@@ -115,20 +115,15 @@ class HomeFragment : Fragment() {
             openFilterModalBelowButton(btnSelectFilter)
         }
 
-
-
         val repo = ProductRepository()
         viewModel = ViewModelProvider(
             this,
             HomeViewModelFactory(repo)
         )[HomeViewModel::class.java]
 
-
-
         val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
         val favRepo = FavouriteRepository(favDao)
         favouriteViewModel = FavouriteViewModel(favRepo)
-
 
 
         val adapter = ProductAdapter(
