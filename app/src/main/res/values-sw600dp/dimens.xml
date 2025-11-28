@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- fragment_cart -->
+    <dimen name="padding_normal">28dp</dimen>
+    <dimen name="padding_small">18dp</dimen>
+
+
+    <dimen name="header_height">72dp</dimen>
+    <dimen name="checkout_button_height">56dp</dimen>
+    <dimen name="space_large">28dp</dimen>
+    <dimen name="label_height">42dp</dimen>
+    <dimen name="checkout_button_width">200dp</dimen>
+
+    <!-- fragment_cart -->
+
+    <!-- item_cart -->
+    <dimen name="title_text_size">30sp</dimen>
+    <dimen name="total_label_text_size">22sp</dimen>
+    <dimen name="total_price_text_size">26sp</dimen>
+    <dimen name="button_text_size">20sp</dimen>
+
+
+    <dimen name="padding_item_vertical">20dp</dimen>
+    <dimen name="margin_small">18dp</dimen>
+
+
+    <dimen name="qty_container_width">180dp</dimen>
+    <dimen name="qty_container_height">56dp</dimen>
+    <dimen name="qty_button_width">56dp</dimen>
+
+    <!-- item_cart -->
+    <dimen name="product_name_text">24sp</dimen>
+    <dimen name="product_price_text">20sp</dimen>
+    <dimen name="qty_text_size">24sp</dimen>
+
+    <!-- fragment_home -->
+
+    <dimen name="header_padding">14dp</dimen>
+    <dimen name="header_text_size">32sp</dimen>
+
+
+    <dimen name="search_height">52dp</dimen>
+    <dimen name="search_margin">20dp</dimen>
+
+    <dimen name="filter_padding_horizontal">24dp</dimen>
+    <dimen name="filter_padding_vertical">12dp</dimen>
+    <dimen name="filter_text_size">22sp</dimen>
+    <dimen name="filter_spacing_small">10dp</dimen>
+    <dimen name="filter_button_height">40dp</dimen>
+    <dimen name="filter_button_text_size">16sp</dimen>
+    <dimen name="filter_button_padding_horizontal">18dp</dimen>
+
+
+    <dimen name="rv_padding_start">8dp</dimen>
+    <dimen name="rv_padding_end">20dp</dimen>
+    <dimen name="rv_padding_top">20dp</dimen>
+    <!-- fragment_home -->
+
+    <!-- item_product -->
+    <!-- item_product (TABLET) -->
+    <dimen name="iproduct_card_margin">14dp</dimen>
+    <dimen name="iproduct_card_elevation">5dp</dimen>
+    <dimen name="iproduct_card_corner_radius">12dp</dimen>
+    <dimen name="iproduct_card_inner_padding">10dp</dimen>
+
+    <dimen name="iproduct_image_height">180dp</dimen>
+    <dimen name="iproduct_fav_icon_margin">10dp</dimen>
+
+    <dimen name="iproduct_price_padding_horizontal">14dp</dimen>
+    <dimen name="iproduct_price_padding_vertical">10dp</dimen>
+    <dimen name="iproduct_price_text_size">18sp</dimen>
+
+    <dimen name="iproduct_name_padding">10dp</dimen>
+    <dimen name="iproduct_name_text_size">18sp</dimen>
+
+    <dimen name="iproduct_btn_height">42dp</dimen>
+    <dimen name="iproduct_btn_margin">14dp</dimen>
+    <dimen name="iproduct_btn_padding">10dp</dimen>
+
+    <!-- item_product -->
+
+    <!-- fav fragment -->
+    <dimen name="fav_screen_padding">16dp</dimen>
+    <dimen name="fav_title_padding">12dp</dimen>
+    <dimen name="fav_title_text_size">28sp</dimen>
+    <!-- fav fragment -->
+
+    <!-- iFav item -->
+    <dimen name="iFav_card_margin">20dp</dimen>
+    <dimen name="iFav_card_corner_radius">18dp</dimen>
+    <dimen name="iFav_card_elevation">10dp</dimen>
+
+    <dimen name="iFav_fav_icon_size">54dp</dimen>
+    <dimen name="iFav_fav_icon_margin">16dp</dimen>
+    <dimen name="iFav_fav_icon_padding">12dp</dimen>
+
+    <dimen name="iFav_info_padding">20dp</dimen>
+
+    <dimen name="iFav_name_text_size">24sp</dimen>
+    <dimen name="iFav_price_text_size">22sp</dimen>
+
+    <dimen name="iFav_price_padding_top">10dp</dimen>
+
+    <!-- iFav item -->
+
+    <!-- Filter Modal -->
+    <dimen name="filterModal_screen_padding">32dp</dimen>
+
+    <dimen name="filterModal_close_size">40dp</dimen>
+    <dimen name="filterModal_close_padding">8dp</dimen>
+
+    <dimen name="filterModal_title_text_size">28sp</dimen>
+    <dimen name="filterModal_title_margin_top">20dp</dimen>
+    <dimen name="filterModal_title_margin_bottom">28dp</dimen>
+
+    <dimen name="filterModal_button_height">58dp</dimen>
+    <dimen name="filterModal_button_text_size">18sp</dimen>
+    <dimen name="filterModal_button_margin_top">16dp</dimen>
+
+    <!-- Filter Modal -->
+
+    <!-- Product Detail -->
+
+    <dimen name="productDetail_topbar_height">80dp</dimen>
+    <dimen name="productDetail_topbar_padding_start">20dp</dimen>
+    <dimen name="productDetail_topbar_padding_end">20dp</dimen>
+
+    <dimen name="productDetail_back_icon_size">40dp</dimen>
+    <dimen name="productDetail_back_icon_margin_left">10dp</dimen>
+
+    <dimen name="productDetail_title_margin_start">22dp</dimen>
+    <dimen name="productDetail_title_padding_left">24dp</dimen>
+    <dimen name="productDetail_title_text_size">28sp</dimen>
+
+
+    <dimen name="productDetail_image_height">380dp</dimen>
+    <dimen name="productDetail_image_margin">24dp</dimen>
+
+    <dimen name="productDetail_fav_icon_size">48dp</dimen>
+    <dimen name="productDetail_fav_icon_margin">20dp</dimen>
+
+
+    <dimen name="productDetail_title_text_size_big">30sp</dimen>
+    <dimen name="productDetail_title_padding_horizontal">24dp</dimen>
+
+    <dimen name="productDetail_description_text_size">20sp</dimen>
+    <dimen name="productDetail_description_padding_top">12dp</dimen>
+    <dimen name="productDetail_description_padding_bottom">22dp</dimen>
+    <dimen name="productDetail_description_padding_horizontal">24dp</dimen>
+    <dimen name="productDetail_description_line_spacing">6dp</dimen>
+
+
+    <dimen name="productDetail_bottom_height">100dp</dimen>
+    <dimen name="productDetail_bottom_padding">20dp</dimen>
+
+    <dimen name="productDetail_price_label_text_size">18sp</dimen>
+    <dimen name="productDetail_price_text_size">26sp</dimen>
+
+    <dimen name="productDetail_button_width">200dp</dimen>
+    <dimen name="productDetail_button_height">60dp</dimen>
+    <dimen name="productDetail_button_text_size">20sp</dimen>
+
+    <!-- Product Detail -->
+
+
+
+
+
+
+</resources>

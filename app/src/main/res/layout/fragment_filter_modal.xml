@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
+    android:padding="@dimen/filterModal_screen_padding"
     android:background="@android:color/white">
 
 
     <ImageView
         android:id="@+id/btnClose"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/filterModal_close_size"
+        android:layout_height="@dimen/filterModal_close_size"
         android:layout_gravity="end"
-        android:padding="4dp"
+        android:padding="@dimen/filterModal_close_padding"
         android:src="@drawable/ic_close_24" />
 
 
@@ -20,55 +21,56 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Filter"
-        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="20dp"/>
+        android:textSize="@dimen/filterModal_title_text_size"
+        android:layout_marginTop="@dimen/filterModal_title_margin_top"
+        android:layout_marginBottom="@dimen/filterModal_title_margin_bottom"/>
+
 
     <Button
         android:id="@+id/btnDefault"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/filterModal_button_height"
         android:text="Varsayılan"
         android:textAllCaps="false"
-        android:textSize="16sp" />
+        android:textSize="@dimen/filterModal_button_text_size" />
 
     <Button
         android:id="@+id/btnPriceAsc"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/filterModal_button_height"
         android:text="Fiyat Artan"
         android:textAllCaps="false"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"/>
+        android:textSize="@dimen/filterModal_button_text_size"
+        android:layout_marginTop="@dimen/filterModal_button_margin_top"/>
 
     <Button
         android:id="@+id/btnPriceDesc"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/filterModal_button_height"
         android:text="Fiyat Azalan"
         android:textAllCaps="false"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"/>
+        android:textSize="@dimen/filterModal_button_text_size"
+        android:layout_marginTop="@dimen/filterModal_button_margin_top"/>
 
     <Button
         android:id="@+id/btnNameAZ"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/filterModal_button_height"
         android:text="İsim A → Z"
         android:textAllCaps="false"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"/>
+        android:textSize="@dimen/filterModal_button_text_size"
+        android:layout_marginTop="@dimen/filterModal_button_margin_top"/>
 
     <Button
         android:id="@+id/btnNameZA"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/filterModal_button_height"
         android:text="İsim Z → A"
         android:textAllCaps="false"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"/>
+        android:textSize="@dimen/filterModal_button_text_size"
+        android:layout_marginTop="@dimen/filterModal_button_margin_top"/>
 
 </LinearLayout>

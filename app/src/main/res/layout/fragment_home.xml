@@ -13,11 +13,11 @@
         android:id="@+id/txtHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="@dimen/header_padding"
         android:text="E-Market"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="24sp"
+        android:textSize="@dimen/header_text_size"
         android:gravity="center_vertical"
         android:background="@color/blue"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,8 +28,8 @@
     <SearchView
         android:id="@+id/search"
         android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_margin="12dp"
+        android:layout_height="@dimen/search_height"
+        android:layout_margin="@dimen/search_margin"
         android:queryHint="Search"
         android:iconifiedByDefault="false"
         android:background="@drawable/search_bg"
@@ -37,13 +37,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+
     <LinearLayout
         android:id="@+id/filterArea"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
+        android:paddingHorizontal="@dimen/filter_padding_horizontal"
+        android:paddingVertical="@dimen/filter_padding_vertical"
         app:layout_constraintTop_toBottomOf="@+id/search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -54,53 +55,44 @@
             android:layout_height="wrap_content"
             android:text="Filters:"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="@dimen/filter_text_size"
             android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/txtFilterResult"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="@dimen/filter_spacing_small"
             android:layout_weight="3"
             android:text=""
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="@dimen/filter_text_size"
             android:layout_gravity="center_vertical"/>
 
         <Button
             android:id="@+id/btnSelectFilter"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="@dimen/filter_button_height"
             android:layout_weight="1"
             android:text="Select Filter"
-            android:paddingHorizontal="12dp"
-            android:textSize="12sp"
+            android:paddingHorizontal="@dimen/filter_button_padding_horizontal"
+            android:textSize="@dimen/filter_button_text_size"
             android:textAllCaps="false"
             android:background="@color/gray"
             android:textColor="@color/black"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="0dp"
+        android:paddingStart="@dimen/rv_padding_start"
+        android:paddingEnd="@dimen/rv_padding_end"
+        android:paddingTop="@dimen/rv_padding_top"
         app:layout_constraintTop_toBottomOf="@id/filterArea"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
 </androidx.constraintlayout.widget.ConstraintLayout>

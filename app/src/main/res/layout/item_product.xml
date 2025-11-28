@@ -4,20 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="3dp"
-    app:cardCornerRadius="8dp">
+    android:layout_margin="@dimen/iproduct_card_margin"
+    app:cardElevation="@dimen/iproduct_card_elevation"
+    app:cardCornerRadius="@dimen/iproduct_card_corner_radius">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:background="@color/very_light_gray"
-        android:orientation="vertical">
+        android:padding="@dimen/iproduct_card_inner_padding"
+        android:orientation="vertical"
+        android:background="@color/very_light_gray">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp">
+            android:layout_height="@dimen/iproduct_image_height">
 
             <ImageView
                 android:id="@+id/imgProduct"
@@ -32,10 +32,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
-                android:layout_margin="6dp"
+                android:layout_margin="@dimen/iproduct_fav_icon_margin"
                 android:src="@drawable/ic_fav_24_favourite"
                 android:clickable="true"
-
                 android:focusable="true" />
         </FrameLayout>
 
@@ -43,35 +42,36 @@
             android:id="@+id/txtPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:textSize="14sp"
+            android:paddingHorizontal="@dimen/iproduct_price_padding_horizontal"
+            android:paddingTop="@dimen/iproduct_price_padding_vertical"
+            android:paddingBottom="@dimen/iproduct_price_padding_vertical"
             android:textColor="@color/blue"
-            android:text="000 TL" />
+            android:textSize="@dimen/iproduct_price_text_size"
+            android:text="000 TL"/>
 
         <TextView
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:text="14 Pro Max"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:padding="@dimen/iproduct_name_padding"
             android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/iproduct_name_text_size"
             android:maxLines="2"
             android:minLines="2"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            android:text="Product Name"/>
 
         <Button
             android:id="@+id/btnAddToCart"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_margin="8dp"
+            android:layout_height="@dimen/iproduct_btn_height"
+            android:layout_margin="@dimen/iproduct_btn_margin"
+            android:padding="@dimen/iproduct_btn_padding"
             android:text="Add to Cart"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:background="@drawable/button_primary"
-            android:padding="6dp"/>
+            android:background="@drawable/button_primary"/>
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>
