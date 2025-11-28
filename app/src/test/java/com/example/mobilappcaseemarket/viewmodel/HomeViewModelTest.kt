@@ -39,9 +39,6 @@ class HomeViewModelTest {
         viewModel = HomeViewModel(fakeRepo)
     }
 
-    // ------------------------------------------------------
-    // 1) fetchProducts() -> İlk sayfa yükleniyor mu?
-    // ------------------------------------------------------
     @Test
     fun fetchProducts_shouldLoadInitialProducts() {
         viewModel.fetchProducts()
@@ -51,9 +48,6 @@ class HomeViewModelTest {
         assertEquals("Apple iPhone", list[0].name)
     }
 
-    // ------------------------------------------------------
-    // 2) Search filter testi
-    // ------------------------------------------------------
     @Test
     fun searchFilter_shouldReturnMatchingProduct() {
         viewModel.fetchProducts()
@@ -67,9 +61,6 @@ class HomeViewModelTest {
         assertEquals("Apple iPhone", result[0].name)
     }
 
-    // ------------------------------------------------------
-    // 3) Sort PRICE_DESC testi
-    // ------------------------------------------------------
     @Test
     fun sortFilter_priceDesc_shouldSortDescending() {
         viewModel.fetchProducts()
@@ -80,31 +71,24 @@ class HomeViewModelTest {
 
         val result = viewModel.productList.getOrAwaitValue()
 
-        assertEquals("1000", result[0].price)  // En pahalı
+        assertEquals("1000", result[0].price)
         assertEquals("800", result[1].price)
-        assertEquals("500", result[2].price)   // En ucuz
+        assertEquals("500", result[2].price)
     }
 
-    // ------------------------------------------------------
-    // 4) Paging testi
-    // ------------------------------------------------------
     @Test
     fun paging_shouldNotDuplicateOrMissItems() {
         viewModel.fetchProducts()
 
         val firstPage = viewModel.productList.getOrAwaitValue()
-        assertEquals(3, firstPage.size)  // elimizde sadece 3 ürün var
+        assertEquals(3, firstPage.size)
 
-        // Tekrar loadNextPage çağırsak bile ürün 3 olduğu için değişmez
         viewModel.loadNextPage()
 
         val secondPage = viewModel.productList.getOrAwaitValue()
         assertEquals(3, secondPage.size)
     }
 
-    // ------------------------------------------------------
-    // 5) isLoading testi
-    // ------------------------------------------------------
     @Test
     fun fetchProducts_shouldToggleIsLoading() {
         viewModel.fetchProducts()
@@ -112,4 +96,81 @@ class HomeViewModelTest {
         val loading = viewModel.isLoading.getOrAwaitValue()
         assertFalse(loading)
     }
+
+    @Test
+    fun sortFilter_nameAsc() {
+        viewModel.fetchProducts()
+
+        viewModel.updateFilter(
+            FilterOptions(sortType = SortType.NAME_ASC)
+        )
+
+        val result = viewModel.productList.getOrAwaitValue()
+
+        assertEquals("Apple iPhone", result[0].name)
+        assertEquals("Samsung S24", result[1].name)
+        assertEquals("Xiaomi Note", result[2].name)
+    }
+
+    @Test
+    fun sortFilter_nameDesc() {
+        viewModel.fetchProducts()
+
+        viewModel.updateFilter(
+            FilterOptions(sortType = SortType.NAME_DESC)
+        )
+
+        val result = viewModel.productList.getOrAwaitValue()
+
+        assertEquals("Xiaomi Note", result[0].name)
+        assertEquals("Samsung S24", result[1].name)
+        assertEquals("Apple iPhone", result[2].name)
+    }
+
+    @Test
+    fun sortFilter_priceAsc() {
+        viewModel.fetchProducts()
+
+        viewModel.updateFilter(
+            FilterOptions(sortType = SortType.PRICE_ASC)
+        )
+
+        val result = viewModel.productList.getOrAwaitValue()
+
+        assertEquals("500", result[0].price)
+        assertEquals("800", result[1].price)
+        assertEquals("1000", result[2].price)
+    }
+
+    @Test
+    fun sortFilter_priceDesc() {
+        viewModel.fetchProducts()
+
+        viewModel.updateFilter(
+            FilterOptions(sortType = SortType.PRICE_DESC)
+        )
+
+        val result = viewModel.productList.getOrAwaitValue()
+
+        assertEquals("1000", result[0].price)  // en pahalı
+        assertEquals("800", result[1].price)
+        assertEquals("500", result[2].price)  // en ucuz
+    }
+
+    @Test
+    fun searchFilter() {
+        viewModel.fetchProducts()
+        viewModel.updateFilter(
+            FilterOptions(
+                searchQuery = "sam"
+            )
+        )
+        val result = viewModel.productList.getOrAwaitValue()
+        assertEquals(1, result.size)
+        assertEquals("Samsung S24", result[0].name)
+    }
+
+
+
+
 }

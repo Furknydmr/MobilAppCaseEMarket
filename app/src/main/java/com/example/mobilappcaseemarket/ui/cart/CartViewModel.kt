@@ -11,10 +11,11 @@ import com.example.mobilappcaseemarket.data.local.AppDatabase
 import com.example.mobilappcaseemarket.data.model.CartItem
 import com.example.mobilappcaseemarket.data.model.Product
 import com.example.mobilappcaseemarket.data.repository.CartRepository
+import com.example.mobilappcaseemarket.data.repository.CartRepositoryInterface
 import kotlinx.coroutines.launch
 
 class CartViewModel(
-    private val repository: CartRepository
+    private val repository: CartRepositoryInterface
 ) : ViewModel() {
 
     private val _cartItems = MutableLiveData<List<CartItem>>()
@@ -23,7 +24,7 @@ class CartViewModel(
     fun loadCart() {
         viewModelScope.launch {
             val data = repository.getCartItems()
-            Log.d("CART_DEBUG", "ROOM'DAN GELEN ÜRÜN SAYISI: ${data.size}")
+
             _cartItems.value = repository.getCartItems()
         }
     }
@@ -31,13 +32,11 @@ class CartViewModel(
     fun addToCart(item: CartItem) {
 
         viewModelScope.launch {
-            Log.d("CART_VM", "📥 addToCart() çağrıldı → item = $item")
+
             repository.addToCart(item)
-            Log.d("CART_VM", "💾 Repository.addToCart tamamlandı")
-            loadCart() // güncel listeyi yükle
+            loadCart()
         }
     }
-
 
     fun increaseQuantity(item: CartItem) {
         viewModelScope.launch {
@@ -63,9 +62,7 @@ class CartViewModel(
     fun addProductToCart(product: Product) {
         viewModelScope.launch {
 
-
             val currentItems = repository.getCartItems()
-
 
             val existingItem = currentItems.find { it.id == product.id }
 
@@ -84,7 +81,6 @@ class CartViewModel(
 
                 repository.addToCart(item)
                 loadCart()
-
             }
         }
     }

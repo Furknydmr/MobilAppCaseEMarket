@@ -150,8 +150,6 @@ class HomeFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 

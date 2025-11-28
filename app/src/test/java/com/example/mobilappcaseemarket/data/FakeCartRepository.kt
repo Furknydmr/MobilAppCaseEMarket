@@ -1,5 +1,8 @@
 package com.example.mobilappcaseemarket.data
 
+import com.example.mobilappcaseemarket.data.model.CartItem
+import com.example.mobilappcaseemarket.data.repository.CartRepositoryInterface
+
 class FakeCartRepository : CartRepositoryInterface {
 
     private val cartItems = mutableListOf<CartItem>()
@@ -15,8 +18,8 @@ class FakeCartRepository : CartRepositoryInterface {
     override suspend fun increaseQuantity(item: CartItem) {
         val index = cartItems.indexOfFirst { it.id == item.id }
         if (index != -1) {
-            val updated = cartItems[index].copy(quantity = cartItems[index].quantity + 1)
-            cartItems[index] = updated
+            val current = cartItems[index]
+            cartItems[index] = current.copy(quantity = current.quantity + 1)
         }
     }
 
@@ -24,8 +27,10 @@ class FakeCartRepository : CartRepositoryInterface {
         val index = cartItems.indexOfFirst { it.id == item.id }
         if (index != -1) {
             val current = cartItems[index]
-            if (current.quantity > 1) {
-                cartItems[index] = current.copy(quantity = current.quantity - 1)
+            val newQty = current.quantity - 1
+
+            if (newQty > 0) {
+                cartItems[index] = current.copy(quantity = newQty)
             } else {
                 cartItems.removeAt(index)
             }
@@ -36,3 +41,4 @@ class FakeCartRepository : CartRepositoryInterface {
         cartItems.removeIf { it.id == item.id }
     }
 }
+

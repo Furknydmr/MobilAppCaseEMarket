@@ -4,10 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobilappcaseemarket.data.repository.FavouriteRepository
+import com.example.mobilappcaseemarket.data.repository.FavouriteRepositoryInterface
 import kotlinx.coroutines.launch
 
 class FavouriteViewModel(
-    private val repository: FavouriteRepository
+    private val repository: FavouriteRepositoryInterface
 ) : ViewModel() {
 
 
