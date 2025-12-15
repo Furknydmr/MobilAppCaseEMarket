@@ -13,4 +13,8 @@ class FakeProductApi : ProductApi {
     override suspend fun getProducts(): List<Product> {
         return fakeProducts
     }
+
+    override suspend fun getProductById(id: String): Product {
+        TODO("Not yet implemented")
+    }
 }

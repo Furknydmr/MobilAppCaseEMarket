@@ -1,88 +1,90 @@
 package com.example.mobilappcaseemarket.ui.home
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mobilappcaseemarket.R
 import com.example.mobilappcaseemarket.data.model.Product
+import com.example.mobilappcaseemarket.databinding.ItemProductBinding
 import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 
 class ProductAdapter(
-    private val list: MutableList<Product>,
     private val imageHeight: Int,
     private val onItemClick: (Product) -> Unit,
     private val onAddClick: (Product) -> Unit,
-    private val favouriteViewModel: FavouriteViewModel,
-    private val lifecycleOwner: LifecycleOwner,
-) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+    private val onFavouriteClick: (Product) -> Unit,
+) : ListAdapter<Product, ProductAdapter.ProductViewHolder>(DiffCallback) {
 
 
-    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img = itemView.findViewById<ImageView>(R.id.imgProduct)
-        val name = itemView.findViewById<TextView>(R.id.txtName)
-        val price = itemView.findViewById<TextView>(R.id.txtPrice)
-        val btnAdd = itemView.findViewById<Button>(R.id.btnAddToCart)
-        val imgFav = itemView.findViewById<ImageView>(R.id.imgFavourite)
-    }
+
+
+    private var favourites: Set<String> = emptySet()
+
+
+    class ProductViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_product, parent, false)
-        return ProductViewHolder(view)
+        val binding = ItemProductBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false)
+           return ProductViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val item = list[position]
+        val item = getItem(position)
 
 
-        val params = holder.img.layoutParams
+        val params = holder.binding.imgProduct.layoutParams
         params.height = imageHeight
-        holder.img.layoutParams = params
-        holder.name.text = item.name
-        holder.price.text = "${item.price} ₺"
+        holder.binding.imgProduct.layoutParams = params
+
+        holder.binding.txtName.text = item.name
+        holder.binding.txtPrice.text = "${item.price} ₺"
 
         Glide.with(holder.itemView.context)
             .load(item.image)
-            .into(holder.img)
+            .into(holder.binding.imgProduct)
 
         holder.itemView.setOnClickListener {
             onItemClick(item)
         }
 
 
-        holder.btnAdd.setOnClickListener {
+        holder.binding.btnAddToCart.setOnClickListener {
             onAddClick(item)
-            Log.d("addProduct", "butona tıklandı. Id:${item.id} ")
         }
 
+        val isFav = favourites.contains(item.id)
+        holder.binding.imgFavourite.setImageResource(
+            if (isFav) R.drawable.ic_fav_24_filled
+            else R.drawable.ic_fav_24_favourite
+        )
 
-        favouriteViewModel.favourites.observe(lifecycleOwner) { favSet ->
-            val isFav = favSet.contains(item.id)
-
-            holder.imgFav.setImageResource(
-                if (isFav) R.drawable.ic_fav_24_filled
-                else R.drawable.ic_fav_24_favourite
-            )
-        }
-
-        holder.imgFav.setOnClickListener {
-            favouriteViewModel.toggleFavourite(item.id)
+        holder.binding.imgFavourite.setOnClickListener {
+            onFavouriteClick(item)
         }
     }
 
-    override fun getItemCount(): Int = list.size
-
-    fun updateList(newList: List<Product>) {
-        list.clear()
-        list.addAll(newList)
+    fun updateFavourites(newFavs: Set<String>) {
+        favourites = newFavs
         notifyDataSetChanged()
     }
+
+
+    object DiffCallback : androidx.recyclerview.widget.DiffUtil.ItemCallback<Product>() {
+
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id   // Aynı ürün mü?
+        }
+
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem == newItem         // İçerik aynı mı?
+        }
+    }
+
+
+
+
 
 }

@@ -2,17 +2,45 @@ package com.example.mobilappcaseemarket.data.repository
 
 import com.example.mobilappcaseemarket.data.local.CartDao
 import com.example.mobilappcaseemarket.data.model.CartItem
+import com.example.mobilappcaseemarket.data.model.Product
 
-class CartRepository(
-    private val dao: CartDao
-) : CartRepositoryInterface {
+class CartRepository(private val dao: CartDao) : CartRepositoryInterface {
 
+
+    //ViewModel bana ‘sepetteki ürünleri getir’ dedi.
+    //DAO’ya gidip SQL çalıştıracağım ve sonucu ViewModel’e geri vereceğim.”
     override suspend fun getCartItems(): List<CartItem> {
         return dao.getCartItems()
     }
 
-    override suspend fun addToCart(item: CartItem) {
-        dao.addToCart(item)
+
+
+    override suspend fun addToCart(product: Product) {
+
+        // 1) Mevcut sepeti DB'den al
+        val currentItems = dao.getCartItems()
+
+        // 2) Eklenmek istenen ürün zaten var mı bak
+        val existingItem = currentItems.find { it.id == product.id }
+
+        if (existingItem != null) {
+            // 3a) Sepette varsa quantity artır
+            dao.updateQuantity(
+                existingItem.id,
+                existingItem.quantity + 1
+            )
+
+        } else {
+            // 3b) Sepette yoksa yeni CartItem oluştur ve ekle
+            val newItem = CartItem(
+                id = product.id,
+                name = product.name,
+                price = product.price,
+                quantity = 1
+            )
+
+            dao.addToCart(newItem)
+        }
     }
 
     override suspend fun increaseQuantity(item: CartItem) {

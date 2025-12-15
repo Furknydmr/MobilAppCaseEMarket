@@ -8,12 +8,11 @@ import com.example.mobilappcaseemarket.databinding.ItemCartBinding
 
 class CartAdapter(
     private var items: MutableList<CartItem> = mutableListOf(),
-
     private val onIncrease: (CartItem) -> Unit,
     private val onDecrease: (CartItem) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
-    inner class CartViewHolder(val binding: ItemCartBinding)
+    class CartViewHolder(val binding: ItemCartBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
@@ -27,7 +26,7 @@ class CartAdapter(
 
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        val item = items[position]
+        val item = items[position] //Tek seferde tüm item’ları çizmez. Her satır için hangi veriyi vereceğini bilmek zorundadır
 
         holder.binding.txtName.text = item.name
         holder.binding.txtPrice.text = "${item.price} ₺"
@@ -42,7 +41,7 @@ class CartAdapter(
         }
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = items.size //Liste kaç eleman içeriyorsa RecyclerView’a O KADAR satır çizmesini söyle
 
     fun updateList(newList: List<CartItem>) {
         items = newList.toMutableList()

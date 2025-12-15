@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    //id("com.google.devtools.ksp")
+   // id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -53,6 +55,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,5 +82,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 // Mockito
     testImplementation("org.mockito:mockito-core:4.11.0")
+
+    //Hilt
+    //implementation("com.google.dagger:hilt-android:2.57.1")
+    //kapt("com.google.dagger:hilt-android-compiler:2.57.1")
 
 }

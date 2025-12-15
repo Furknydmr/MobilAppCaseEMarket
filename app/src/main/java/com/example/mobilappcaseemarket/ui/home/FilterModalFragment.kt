@@ -11,6 +11,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 import androidx.fragment.app.setFragmentResult
 
+//Bu modalı bir Bottom Sheet olarak açıyorsun, yani ekranın altından kayan özel bir fragment.
+//Bu bir BottomSheetDialogFragment (modal aşağıdan kayan bir sheet).
+//
+//Filtre seçenekleri burada gösterilecek.
+//
+//Kullanıcı seçim yapınca modal kapanacak ve sonucu ana Fragment’a geri gönderecek.
 class FilterModalFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(

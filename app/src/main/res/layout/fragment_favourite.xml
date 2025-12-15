@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="@dimen/fav_screen_padding">
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/txtTitleFavourite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Favourite"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:padding="@dimen/fav_title_padding"
-        android:textSize="@dimen/fav_title_text_size"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerFavourite"
-        android:background="@color/white"
+    <!-- Ana içerik -->
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:padding="@dimen/fav_screen_padding">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/txtTitleFavourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Favourite"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:padding="@dimen/fav_title_padding"
+            android:textSize="@dimen/fav_title_text_size"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerFavourite"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <!-- ÜSTTE DURAN ProgressBar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone" />
+</FrameLayout>

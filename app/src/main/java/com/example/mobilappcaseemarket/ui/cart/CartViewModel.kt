@@ -1,7 +1,6 @@
 package com.example.mobilappcaseemarket.ui.cart
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,14 +27,14 @@ class CartViewModel(
         viewModelScope.launch {
             val data = repository.getCartItems()
             _cartItems.value = data
-
             _cartCount.value = data.sumOf { it.quantity }
         }
     }
 
-    fun addToCart(item: CartItem) {
+
+    fun addProductToCart(product: Product) {
         viewModelScope.launch {
-            repository.addToCart(item)
+            repository.addToCart(product)
             loadCart()
         }
     }
@@ -61,25 +60,10 @@ class CartViewModel(
         }
     }
 
-    fun addProductToCart(product: Product) {
-        viewModelScope.launch {
-
-            val currentItems = repository.getCartItems()
-            val existingItem = currentItems.find { it.id == product.id }
-
-            if (existingItem != null) {
-                repository.increaseQuantity(existingItem)
-            } else {
-                val item = CartItem(
-                    id = product.id,
-                    name = product.name,
-                    price = product.price,
-                    quantity = 1
-                )
-                repository.addToCart(item)
-            }
-
-            loadCart()
+    fun calculateTotalPrice(items: List<CartItem>): Double {
+        return items.sumOf { item ->
+            val price = item.price.toDoubleOrNull() ?: 0.0
+            price * item.quantity
         }
     }
 

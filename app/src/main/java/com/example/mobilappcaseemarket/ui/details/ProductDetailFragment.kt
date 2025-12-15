@@ -1,21 +1,18 @@
 package com.example.mobilappcaseemarket.ui.details
 
 import ProductDetailViewModel
-import ProductDetailViewModelFactory
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.mobilappcaseemarket.R
-import com.example.mobilappcaseemarket.data.local.AppDatabase
-import com.example.mobilappcaseemarket.data.repository.FavouriteRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.databinding.FragmentProductDetailBinding
 import com.example.mobilappcaseemarket.ui.cart.CartViewModel
+import com.example.mobilappcaseemarket.ui.home.HomeViewModel
 import com.example.mobilappcaseemarket.ui.home.favourite.FavouriteViewModel
 
 class ProductDetailFragment : Fragment() {
@@ -32,25 +29,28 @@ class ProductDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        productId = requireArguments().getString("productId") ?: ""
+
+        // PRODUCT DETAIL VM
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            ProductDetailViewModel.ProductDetailViewModelFactory()
+        )[ProductDetailViewModel::class.java]
+
         cartViewModel = ViewModelProvider(
-            this,
+            requireActivity(),
             CartViewModel.CartViewModelFactory(requireContext())
         )[CartViewModel::class.java]
 
-        productId = requireArguments().getString("productId") ?: ""
-        Log.d("DETAIL_DEBUG", "Gelen productId: $productId")
+        favouriteViewModel = ViewModelProvider(
+            requireActivity(),
+            FavouriteViewModel.FavouriteViewModelFactory(requireContext())
+        )[FavouriteViewModel::class.java]
 
-        val repo = ProductRepository()
-        viewModel = ViewModelProvider(
-            this,
-            ProductDetailViewModelFactory(repo)
-        )[ProductDetailViewModel::class.java]
 
         viewModel.fetchProductById(productId)
 
-        val favDao = AppDatabase.getDatabase(requireContext()).favouriteDao()
-        val favRepo = FavouriteRepository(favDao)
-        favouriteViewModel = FavouriteViewModel(favRepo)
     }
 
     override fun onCreateView(
@@ -63,19 +63,6 @@ class ProductDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-
-        binding.btnAddToCart.setOnClickListener {
-            val product = viewModel.product.value
-            if (product != null) {
-                cartViewModel.addProductToCart(product)
-                Log.d("DETAIL_ADD", "Sepete eklendi.")
-            }
-        }
-
 
         // PRODUCT OBSERVER
         viewModel.product.observe(viewLifecycleOwner) { product ->
@@ -99,6 +86,16 @@ class ProductDetailFragment : Fragment() {
                 binding.imgFavouriteDetail.setImageResource(R.drawable.ic_fav_24_filled)
             } else {
                 binding.imgFavouriteDetail.setImageResource(R.drawable.ic_fav_24_favourite)
+            }
+        }
+
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        binding.btnAddToCart.setOnClickListener {
+            viewModel.product.value?.let { product ->
+                cartViewModel.addProductToCart(product)
             }
         }
 

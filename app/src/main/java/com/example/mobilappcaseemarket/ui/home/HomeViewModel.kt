@@ -1,37 +1,46 @@
 package com.example.mobilappcaseemarket.ui.home
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.mobilappcaseemarket.data.model.Product
+import com.example.mobilappcaseemarket.data.remote.RetrofitClient
+import com.example.mobilappcaseemarket.data.repository.ProductRepository
 import com.example.mobilappcaseemarket.data.repository.ProductRepositoryInterface
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewModel() {
 
-    val productList = MutableLiveData<List<Product>>()
-    val isLoading = MutableLiveData<Boolean>()
 
+    private val _productList = MutableLiveData<List<Product>>()
+    val productList: LiveData<List<Product>> get() = _productList
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+
+    //API’dan gelen ham veri. UI’ın görmediği saf liste. Sadece filtre ve arama işlemleri için kullanılıyor
     private var allProducts: List<Product> = emptyList()
     private var filteredProducts: List<Product> = emptyList()
 
     var filterOptions = FilterOptions()
 
     private var currentIndex = 0
-    private val pageSize = 10
+    private val pageSize = 4
     private var isLastPage = false
 
 
 
     fun fetchProducts() {
-        viewModelScope.launch {
+        viewModelScope.launch { //Bu, suspend fonksiyonları çalıştırmak için coroutine açıyor. UI donmaz. Network beklerken ekran akıcı kalır.
             try {
-                isLoading.value = true
-                allProducts = repository.getProducts()
+                _isLoading.value = true //Veri çekiyorum, bir saniye bekle.
+                allProducts = repository.getProducts() //API çağrısı
                 applyFilters()
             } finally {
-                isLoading.value = false
+                _isLoading.value = false //İş bitti, loading’i kapat
             }
         }
     }
@@ -48,7 +57,6 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
     private fun applyFilters() {
         var result = allProducts
 
-        // 🔍 Search
         if (filterOptions.searchQuery.isNotBlank()) {
             result = result.filter {
                 it.name.contains(filterOptions.searchQuery, ignoreCase = true)
@@ -69,11 +77,10 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
     }
 
 
-
     private fun resetAndLoad() {
         currentIndex = 0
         isLastPage = false
-        productList.value = emptyList()
+        _productList.value = emptyList()
         loadNextPage()
     }
 
@@ -84,7 +91,7 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
         val nextChunk = filteredProducts.subList(currentIndex, nextIndex)
 
         val updated = (productList.value ?: emptyList()) + nextChunk
-        productList.value = updated
+        _productList.value = updated
 
         currentIndex = nextIndex
 
@@ -92,4 +99,17 @@ class HomeViewModel(private val repository: ProductRepositoryInterface) : ViewMo
             isLastPage = true
         }
     }
+
+    class HomeViewModelFactory : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+            val api = RetrofitClient.api
+            val repo = ProductRepository(api)
+
+            return HomeViewModel(repo) as T
+        }
+    }
+
+
 }

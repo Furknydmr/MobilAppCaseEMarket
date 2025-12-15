@@ -1,17 +1,25 @@
 package com.example.mobilappcaseemarket.data.repository
 
 import com.example.mobilappcaseemarket.data.model.Product
+import com.example.mobilappcaseemarket.data.remote.ProductApi
 import com.example.mobilappcaseemarket.data.remote.RetrofitClient
+//zincirinde API çağrılarını tek noktaya toplamak.
+class ProductRepository (private val api: ProductApi) : ProductRepositoryInterface {
 
-class ProductRepository : ProductRepositoryInterface {
 
     override suspend fun getProducts(): List<Product> {
-        return RetrofitClient.api.getProducts()
+        return try{ RetrofitClient.api.getProducts()
+        } catch (e: Exception){
+            throw Exception("The products could not be found.:${e.message}")
+        }
     }
 
     override suspend fun getProductById(productId: String): Product {
-        val allProducts = RetrofitClient.api.getProducts()
-        return allProducts.find { it.id == productId }
-            ?: throw Exception("Ürün bulunamadı: $productId")
+        return try {
+            RetrofitClient.api.getProductById(productId)
+        } catch (e: Exception) {
+            throw Exception("The product could not be brought.: ${e.message}")
+        }
     }
+
 }
